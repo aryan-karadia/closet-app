@@ -2,7 +2,7 @@
 
 - Epic: E3
 - Owner agent: B
-- Status: open
+- Status: merged
 - Dependencies: ISSUE-23, ISSUE-06
 - Spec reference: See acceptance criteria and the build spec.
 
@@ -22,4 +22,4 @@ Outfit CRUD with occasion, season, vibe, items by slot, scores, explanation arra
 
 ## Routing notes
 
-None yet. Agent D records any mismatch routing here.
+Merged to main 2026-10-30 by Agent D in the Agent B merge order recorded in docs/merges.md. Contract for this issue is still DRAFT until Agent D freezes it after Agent C contract test update. See merges.md for known limitations and mismatches.
