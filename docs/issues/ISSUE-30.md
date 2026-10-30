@@ -22,4 +22,8 @@ Contract test skeletons that Agent B contract must satisfy, plus a documented ch
 
 ## Routing notes
 
+Contract update merged 2026-10-30 by Agent D. Contract still DRAFT pending Agent B fix for duplicate outfit item (ISSUE-13) and OpenAPI alignment (ISSUE-23), plus Agent C live re-run, before Agent D freezes it.
+
+## Routing notes
+
 Merged to main 2026-10-30 by Agent D, merge commit 8d344d2. Contract tests remain skeletons until Agent B drafts and Agent D freezes the API contract (ISSUE-23). Blocked items from Agent C TEST-PLAN.md: frozen contract missing, production function signatures missing, no test server yet. These are not guessed, they are routed to Agent B via Agent D.
