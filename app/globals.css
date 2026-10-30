@@ -1,6 +1,23 @@
 @import "tailwindcss";
 
 /* Closet app base styles (refs ISSUE-20). Mobile first, portrait, one handed use. */
+
+/*
+  UI theme only, from https://colorhunt.co/palette/f6e2e9fefaf3b8cfb384a282
+  Blush #F6E2E9, Cream #FEFAF3, Sage #B8CFB3, Moss #84A282.
+  This changes the website visuals only. It does not change the Deep Winter
+  clothing palette, item ratings, or the outfit builder rules in the spec.
+  Body text stays near black for readability, because Moss on Cream alone
+  is not strong enough for small text.
+*/
+@theme {
+  --color-blush: #f6e2e9;
+  --color-cream: #fefaf3;
+  --color-sage: #b8cfb3;
+  --color-moss: #84a282;
+}
+
 :root { color-scheme: light; }
-body { background: #f4f6f8; color: #111827; font-family: ui-sans-system, system-ui, sans-serif; }
-a { color: #1d4ed8; }
+body { background: #fefaf3; color: #111827; font-family: ui-sans-system, system-ui, sans-serif; }
+a { color: #84a282; text-decoration: underline; }
+a:hover { opacity: 0.85; }
