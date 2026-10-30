@@ -2,7 +2,7 @@
 
 - Epic: E3
 - Owner agent: D
-- Status: decision recorded 2026-10-30, implementation open
+- Status: closed 2026-10-30, decision recorded and fix merged by Agent D, tests pass, see docs/merges.md follow-up run
 
 ## Decision recorded 2026-10-30, source: user choice
 

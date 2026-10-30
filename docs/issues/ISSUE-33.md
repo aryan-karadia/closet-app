@@ -2,7 +2,7 @@
 
 - Epic: E3
 - Owner agent: A
-- Status: open
+- Status: closed 2026-10-30, fix merged by Agent D, tests pass, see docs/merges.md follow-up run
 - Dependencies: ISSUE-16, ISSUE-31 gate bug 2
 - Spec reference: See acceptance criteria and the build spec, and tests/INTEGRATION-GATE.md.
 
