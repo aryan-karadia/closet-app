@@ -1,25 +1,161 @@
-// Home placeholder on the auth branch (refs ISSUE-20).
-// Replaced by the Outfit Builder home screen on the ISSUE-17 branch.
+// Outfit Builder home screen (refs ISSUE-17, spec sections 6.1, 6.2, 6.3, 10).
+// First screen after login. Occasion, season, vibe selectors, Build button,
+// 3 outfits with photos, scores, and why it works. Actions: Save, Log worn,
+// Shuffle slot, Dislike. Disliked combinations are stored in browser local
+// storage (the frozen contract has no dislike endpoint, see the ISSUE-16 PR
+// file) and are not suggested again for 30 days. Empty slots are shown as
+// missing, never invented. No LLM is used in this path.
 // No em dashes are used in this file.
 'use client';
-import Link from 'next/link';
+import { useEffect, useState } from 'react';
 import { useRequireAuth } from '../lib/auth';
-import { Card } from '../components/ui';
+import { api } from '../lib/api-client';
+import type { AdviceRule, Item, Occasion, Season, Vibe } from '../lib/types';
+import { OCCASIONS, SEASONS, SLOT_LABELS, VIBES } from '../lib/types';
+import { Button, Card, ErrorText, Field, Select, SecondaryButton } from '../components/ui';
+import ScoreBadge from '../components/ScoreBadge';
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const engine = require('../lib/outfit-engine/index.js');
+
+import { loadDislikes, saveDislike } from '../lib/dislikes';
+
+interface BuiltOutfit {
+  items: { itemId: string; slot: string; item: Item }[];
+  missingSlots: string[];
+  paletteScore: number; fitScore: number; contrastScore: number; rotationScore: number; totalScore: number;
+  explanation: string[]; savedId?: string | null;
+}
 
 export default function HomePage() {
   const { user, loading } = useRequireAuth();
+  const [items, setItems] = useState<Item[]>([]);
+  const [rules, setRules] = useState<AdviceRule[]>([]);
+  const [occasion, setOccasion] = useState<Occasion>('daily');
+  const [season, setSeason] = useState<Season>('all-season');
+  const [vibe, setVibe] = useState<Vibe>('structured-softboy');
+  const [outfits, setOutfits] = useState<BuiltOutfit[]>([]);
+  const [status, setStatus] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [building, setBuilding] = useState(false);
+
+  useEffect(() => {
+    if (!user) return;
+    api.listItems({ pageSize: '100' }).then((r) => setItems(r.data)).catch(() => {
+      try { const cached = window.localStorage.getItem('closet_wardrobe_cache'); if (cached) setItems(JSON.parse(cached)); } catch { /* no cache */ }
+    });
+    api.listAdviceRules({ pageSize: '100' }).then((r) => setRules(r.data)).catch(() => {});
+  }, [user]);
+
   if (loading || !user) return <p>Loading...</p>;
+
+  async function buildWithWorker(input: unknown): Promise<BuiltOutfit[]> {
+    try {
+      const worker = new Worker(new URL('../lib/outfit-engine/worker.ts', import.meta.url));
+      const result = await new Promise<BuiltOutfit[]>((resolve, reject) => {
+        const timer = setTimeout(() => { try { worker.terminate(); } catch { /* ignore */ } reject(new Error('Worker timed out.')); }, 10000);
+        worker.onmessage = (event: MessageEvent) => { clearTimeout(timer); worker.terminate(); if (event.data.error) reject(new Error(event.data.error)); else resolve(event.data.outfits); };
+        worker.onerror = () => { clearTimeout(timer); reject(new Error('Worker failed.')); };
+        worker.postMessage({ input });
+      });
+      return result;
+    } catch {
+      return engine.buildOutfits(input);
+    }
+  }
+
+  async function build() {
+    setError(null); setStatus(''); setBuilding(true);
+    try {
+      const result = await buildWithWorker({ items, occasion, season, vibe, adviceRules: rules, disliked: loadDislikes() });
+      setOutfits(result);
+      if (!result.length) setStatus('No outfit could be built from in rotation items for this occasion and season. Add items, or try a different season.');
+    } catch (e) { setError(e instanceof Error ? e.message : 'Build failed.'); }
+    setBuilding(false);
+  }
+
+  async function saveOutfit(outfit: BuiltOutfit, index: number): Promise<string | null> {
+    if (outfit.savedId) return outfit.savedId;
+    const created = await api.createOutfit({
+      occasion, season, vibe,
+      items: outfit.items.map((x) => ({ itemId: x.itemId, slot: x.slot })),
+      paletteScore: outfit.paletteScore, fitScore: outfit.fitScore, contrastScore: outfit.contrastScore,
+      rotationScore: outfit.rotationScore, totalScore: outfit.totalScore, explanation: outfit.explanation, saved: true,
+    });
+    setOutfits((list) => list.map((o, i) => (i === index ? { ...o, savedId: created.id } : o)));
+    return created.id;
+  }
+
+  async function logWorn(outfit: BuiltOutfit, index: number) {
+    try {
+      const outfitId = await saveOutfit(outfit, index);
+      if (!outfitId) return;
+      await api.createWearLog({ outfitId, itemIds: outfit.items.map((x) => x.itemId), occasion });
+      setStatus('Logged as worn today. Wear counts updated.');
+    } catch (e) { setError(e instanceof Error ? e.message : 'Log worn failed.'); }
+  }
+
+  function dislike(outfit: BuiltOutfit) {
+    saveDislike(outfit.items.map((x) => x.itemId));
+    setOutfits((list) => list.filter((o) => o !== outfit));
+    setStatus('Disliked. This exact combination will not be suggested again for 30 days.');
+  }
+
+  function shuffleSlot(outfit: BuiltOutfit, index: number, slot: string) {
+    const current = outfit.items.find((x) => x.slot === slot);
+    const alternatives = items.filter((item) => engine.slotForCategory(item.category, item.name) === slot && item.status === 'in rotation' && (!current || item.id !== current.itemId));
+    if (!alternatives.length) { setStatus('No alternative available for ' + SLOT_LABELS[slot as keyof typeof SLOT_LABELS] + '.'); return; }
+    const replacement = [...alternatives].sort((a, b) => (b.paletteScore || 0) - (a.paletteScore || 0))[0];
+    const newItems = outfit.items.map((x) => (x.slot === slot ? { itemId: replacement.id, slot, item: replacement } : x));
+    const slots: Record<string, Item | null> = { 'base-top': null, 'outer-layer': null, bottom: null, shoes: null, accessory: null };
+    for (const x of newItems) slots[x.slot] = x.item;
+    const scores = engine.scoreOutfit(slots, rules);
+    setOutfits((list) => list.map((o, i) => (i === index ? { ...o, items: newItems, ...scores, savedId: null } : o)));
+  }
+
   return (
-    <Card>
-      <h1 className="text-xl font-bold">Closet</h1>
-      <p className="mt-2 text-sm text-slate-600">You are signed in. The Outfit Builder home screen lands on the ISSUE-17 branch.</p>
-      <ul className="mt-4 list-disc pl-5 text-sm">
-        <li><Link href="/wardrobe">Wardrobe</Link></li>
-        <li><Link href="/palette">Palette</Link></li>
-        <li><Link href="/advice-rules">Advice rules</Link></li>
-        <li><Link href="/outfits">Saved outfits</Link></li>
-        <li><Link href="/settings">Settings</Link></li>
-      </ul>
-    </Card>
+    <div className="flex flex-col gap-4">
+      <Card>
+        <h1 className="text-xl font-bold">Outfit Builder</h1>
+        <p className="mt-1 text-sm text-slate-600">Choose an occasion, season, and vibe, then build 3 outfits from your in rotation items. Offline generation works from your last loaded wardrobe; if no wardrobe is cached, connect once to load it.</p>
+        <div className="mt-3 grid grid-cols-3 gap-2">
+          <Field label="Occasion"><Select value={occasion} onChange={(e) => setOccasion(e.target.value as Occasion)}>{OCCASIONS.map((o) => <option key={o} value={o}>{o}</option>)}</Select></Field>
+          <Field label="Season"><Select value={season} onChange={(e) => setSeason(e.target.value as Season)}>{SEASONS.map((s) => <option key={s} value={s}>{s}</option>)}</Select></Field>
+          <Field label="Vibe"><Select value={vibe} onChange={(e) => setVibe(e.target.value as Vibe)}>{VIBES.map((v) => <option key={v} value={v}>{v}</option>)}</Select></Field>
+        </div>
+        <Button className="mt-3" onClick={build} disabled={building}>{building ? 'Building...' : 'Build outfits'}</Button>
+        {status && <p className="mt-2 text-sm">{status}</p>}
+        <ErrorText message={error} />
+      </Card>
+      {outfits.map((outfit, index) => (
+        <Card key={index}>
+          <div className="flex flex-wrap items-center gap-2">
+            <h2 className="font-bold">Outfit {index + 1}</h2>
+            <ScoreBadge score={outfit.totalScore} verdict={outfit.totalScore >= 90 ? 'Perfect' : outfit.totalScore >= 70 ? 'Strong' : outfit.totalScore >= 50 ? 'Works' : 'Avoid'} />
+            <span className="text-sm text-slate-600">Palette {outfit.paletteScore} | Fit {outfit.fitScore} | Contrast {outfit.contrastScore} | Rotation {outfit.rotationScore}</span>
+          </div>
+          <ul className="mt-3 flex flex-col gap-2">
+            {outfit.items.map((x) => (
+              <li key={x.slot} className="flex items-center gap-3 text-sm">
+                {x.item.thumbnailSignedUrl && <img src={x.item.thumbnailSignedUrl} alt={x.item.name} className="h-12 w-12 rounded object-cover" loading="lazy" />}
+                <span><strong>{SLOT_LABELS[x.slot as keyof typeof SLOT_LABELS]}:</strong> {x.item.name} ({x.item.category})</span>
+                <ScoreBadge score={x.item.paletteScore} verdict={x.item.paletteVerdict} />
+                <SecondaryButton onClick={() => shuffleSlot(outfit, index, x.slot)}>Shuffle slot</SecondaryButton>
+              </li>
+            ))}
+          </ul>
+          {outfit.missingSlots.length > 0 && <p className="mt-2 text-sm text-amber-900">Missing: {outfit.missingSlots.map((s) => SLOT_LABELS[s as keyof typeof SLOT_LABELS]).join(', ')}. These slots are empty because no matching item is catalogued; nothing was invented.</p>}
+          <div className="mt-3">
+            <p className="font-medium text-sm">Why this works</p>
+            <ul className="list-disc pl-5 text-sm">{outfit.explanation.map((line, i) => <li key={i}>{line}</li>)}</ul>
+          </div>
+          <div className="mt-3 flex flex-wrap gap-2">
+            <Button onClick={() => saveOutfit(outfit, index)}>Save</Button>
+            <SecondaryButton onClick={() => logWorn(outfit, index)}>Log worn</SecondaryButton>
+            <SecondaryButton onClick={() => dislike(outfit)}>Dislike</SecondaryButton>
+            {outfit.savedId && <span className="text-sm text-slate-600">Saved.</span>}
+          </div>
+        </Card>
+      ))}
+    </div>
   );
 }
