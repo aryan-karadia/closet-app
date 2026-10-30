@@ -1,1 +1,22 @@
-{"background_color":"#fefaf3","description":"Personal wardrobe app: palette rating and outfit builder.","display":"standalone","icons":[{"sizes":"192x192","src":"/icons/icon-192.png","type":"image/png"},{"sizes":"512x512","src":"/icons/icon-512.png","type":"image/png"}],"name":"Closet","scope":"/","short_name":"Closet","start_url":"/","theme_color":"#84a282"}
+{
+    "background_color": "#fefaf3",
+    "description": "Personal wardrobe app: palette rating and outfit builder.",
+    "display": "standalone",
+    "icons": [
+        {
+            "sizes": "192x192",
+            "src": "/icons/icon-192.png",
+            "type": "image/png"
+        },
+        {
+            "sizes": "512x512",
+            "src": "/icons/icon-512.png",
+            "type": "image/png"
+        }
+    ],
+    "name": "Closet",
+    "scope": "/",
+    "short_name": "Closet",
+    "start_url": "/",
+    "theme_color": "#84a282"
+}

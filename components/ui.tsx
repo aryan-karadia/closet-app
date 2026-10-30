@@ -1,7 +1,6 @@
 // Minimal shadcn/ui style components (refs ISSUE-20).
 // Plain Tailwind classes, same visual language as shadcn/ui: button, card,
 // input, select, and a small badge. No other UI framework is used.
-// No em dashes are used in this file.
 'use client';
 import React from 'react';
 
