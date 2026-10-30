@@ -72,6 +72,49 @@ skipped. No real credentials are used anywhere. Placeholders only.
   contract 8 to 16, integration API contract 4 to 11, impl-gated API
   and auth 6 to 15.
 
+## Latest run (2026-10-30, ISSUE-32, ISSUE-33, ISSUE-34 fix tests, on test/ISSUE-32-33-34-fix-tests)
+
+This run is on main at cfb03d8 plus only the new test files in this
+branch, before the Agent A fix. It is a pre-fix reproduction run, not
+a pass claim, and the ISSUE-31 gate is NOT re-run as passing here.
+No production code, backend code, or contract file was changed.
+
+- Without CLOSET_TEST_BASE_URL: Total 172, Pass 145, Fail 7, Skipped 20.
+  Baseline before this branch (ISSUE-31 gate, non-live): Total 143,
+  Pass 129, Fail 0, Skipped 14. This branch adds 29 tests: unit spec
+  15, implementation-gated 14. Pass rises by 16 and skipped rises by
+  6, which accounts for all 29 new tests except the 7 failures below.
+- With CLOSET_TEST_BASE_URL=http://localhost:3101 against a local dev
+  server (CLOSET_TEST_MODE=1 PORT=3101 node scripts/dev-server.js):
+  Total 172, Pass 159, Fail 7, Skipped 6. The live API and auth tests
+  that were skipped without a server now pass, so pass rises by 14
+  and skipped falls by 14. No new live failure appears.
+- The 7 failures are all new implementation-gated fix tests, and all
+  fail for the documented pre-fix reason on main, not for a test
+  construction error:
+  - ISSUE-33 diversity, 3 tests: a one-pair wardrobe returns 3 outfits
+    sharing the same top and outer pair, a two-pair wardrobe returns
+    3 outfits with a repeat, and fewer outfits carry no message.
+  - ISSUE-34 interview unrated, 4 tests: a score 99 unrated top is
+    sorted before a rated top, the same happens for a missing
+    paletteVerdict, an unrated fallback top has no warning in its
+    explanation, and an all-unrated outfit has no warning and no
+    not-verified signal.
+- The 1 passing new implementation-gated test is the ISSUE-34
+  regression guard: Avoid, Works, unrated hoodies, and unrated
+  graphic tees are still rejected in interview builds.
+- The 6 skipped new tests are UI only and are not passes: 5 shuffle
+  cases in app/page.tsx and 1 outfit card warning case. shuffleSlot
+  and the outfit card are React code that node:test cannot execute.
+  Their spec level equivalents pass in the unit file, but the React
+  button and card still need a browser or manual check, flagged in
+  the PR file for this branch. Do not count a skipped shuffle or card
+  test as a shuffle or card pass.
+- After the Agent A fix, these 7 failures must become passes, the 6
+  skipped UI cases must be checked in a browser or manually, and the
+  ISSUE-31 gate must be re-run before Agent D merges. Until then,
+  this branch must not be merged as a green suite.
+
 ## Latest run (2026-10-30, before any feature code)
 
 - Total: 98
@@ -221,6 +264,74 @@ permanent-delete, item colours, POST /api/uploads and
 POST /api/uploads/signed-url, GET /api/storage/:path (local dev server
 only), outfit items, wear logs, advice rules seed, and POST /api/export.
 The contract is DRAFT, not frozen. Agent D freezes it after this update.
+
+### tests/unit/shuffle-diversity-interview-fix.test.js, 15 tests, GREEN spec oracle, ISSUE-32, ISSUE-33, ISSUE-34, spec 6.1, 6.2, 6.3, 6.4
+
+These are spec level oracle tests. They use production classification
+helpers (slotForCategory, isSaturatedAccent, isDisliked) but the
+shuffle selection rule itself is restated in the test file, because
+shuffleSlot is React code that node:test cannot execute. They are
+GREEN, but they are not proof that the React shuffle button works.
+That proof is the skipped implementation-gated shuffle tests below
+plus a browser or manual check.
+
+- shuffle fix ISSUE-32: a would-be second saturated accent is rejected and replaced with a valid alternative, GREEN spec oracle, spec 6.2, ISSUE-32
+- shuffle fix ISSUE-32: an interview excluded category is rejected and replaced with a valid alternative, GREEN spec oracle, spec 6.4, ISSUE-32
+- shuffle fix ISSUE-32: an Avoid verdict alternative is rejected and replaced with a valid alternative, GREEN spec oracle, spec 6.3, ISSUE-32
+- shuffle fix ISSUE-32: a disliked combination is rejected and replaced with a valid alternative, GREEN spec oracle, spec 6.1 and 6.7, ISSUE-32
+- shuffle fix ISSUE-32: shuffle replaces only that slot, other items are unchanged, GREEN spec oracle, spec 6.1, ISSUE-32
+- shuffle fix ISSUE-32: when no valid alternative exists, the original outfit is kept with a message, GREEN spec oracle, spec 6.1, ISSUE-32
+- shuffle fix ISSUE-32 and ISSUE-34: an unrated interview alternative is a fallback only, with a warning, GREEN spec oracle, spec 6.4, ISSUE-32, ISSUE-34
+- diversity fix ISSUE-33: three outfits with distinct top and outer pairs are valid, GREEN spec oracle, spec 6.3 step 4 variety, ISSUE-33
+- diversity fix ISSUE-33: a small wardrobe result with fewer outfits is valid only with a message, GREEN spec oracle, spec 6.3 step 4 variety, ISSUE-33
+- diversity fix ISSUE-33: repeated top and outer pairs are never valid, even with a message, GREEN spec oracle, spec 6.3 step 4 variety, ISSUE-33
+- interview unrated ISSUE-34: rated items are sorted first, unrated only as a fallback with a warning in card and explanation, GREEN spec oracle, spec 6.4, ISSUE-34
+- interview unrated ISSUE-34: an outfit made only of unrated items must not be presented as a verified interview outfit, GREEN spec oracle, spec 6.4, ISSUE-34
+- interview unrated ISSUE-34: Avoid, Works, hoodies, and graphic tees are still rejected in interview builds, GREEN spec oracle, spec 6.4, ISSUE-34
+- interview unrated ISSUE-34: a missing paletteVerdict is treated the same as a null paletteVerdict, never as Strong, GREEN spec oracle, spec 6.4, ISSUE-34
+- interview unrated ISSUE-34: unrated items are allowed, not excluded outright, when they are the fallback, GREEN spec oracle, spec 6.4, ISSUE-34
+
+### tests/impl-gated/fix-ISSUE-32-33-34.test.js, 14 tests: 1 pass, 7 fail pre-fix, 6 skipped UI, ISSUE-32, ISSUE-33, ISSUE-34, spec 6.1, 6.3, 6.4
+
+These import the production engine buildOutfits, except for the
+skipped UI cases. On main at cfb03d8, before the Agent A fix, the 7
+running diversity and unrated tests fail as pre-fix reproductions.
+They must pass after the fix. The 6 skipped tests are not passes.
+
+- fix ISSUE-32 shuffle: extra saturated accent alternative is rejected or replaced, SKIPPED UI, spec 6.2, ISSUE-32
+- fix ISSUE-32 shuffle: interview excluded category alternative is rejected or replaced, SKIPPED UI, spec 6.4, ISSUE-32
+- fix ISSUE-32 shuffle: Avoid verdict alternative is rejected or replaced, SKIPPED UI, spec 6.3, ISSUE-32
+- fix ISSUE-32 shuffle: disliked combination alternative is rejected or replaced, SKIPPED UI, spec 6.1 and 6.7, ISSUE-32
+- fix ISSUE-32 shuffle: shuffle replaces only that slot, and keeps the original when no valid alternative exists, SKIPPED UI, spec 6.1, ISSUE-32
+- fix ISSUE-33 diversity: a small wardrobe with one top and outer pair never returns silent repeats, FAILS PRE-FIX, spec 6.3 step 4 variety, ISSUE-33
+- fix ISSUE-33 diversity: a small wardrobe with two distinct pairs returns at most two outfits, never a repeat, FAILS PRE-FIX, spec 6.3 step 4 variety, ISSUE-33
+- fix ISSUE-33 diversity: fewer than 3 outfits must carry a message about the shortfall, FAILS PRE-FIX, spec 6.3 step 4 variety, ISSUE-33
+- fix ISSUE-34 interview unrated: a score 99 unrated top must not be sorted before a rated top, FAILS PRE-FIX, spec 6.4, ISSUE-34
+- fix ISSUE-34 interview unrated: a missing paletteVerdict is treated the same as null, never as Strong, FAILS PRE-FIX, spec 6.4, ISSUE-34
+- fix ISSUE-34 interview unrated: an unrated top is allowed only as a fallback, with a warning in the explanation, FAILS PRE-FIX, spec 6.4, ISSUE-34
+- fix ISSUE-34 interview unrated: an all-unrated outfit is allowed only with a warning, and is never presented as verified, FAILS PRE-FIX, spec 6.4, ISSUE-34
+- fix ISSUE-34 interview unrated: Avoid, Works, unrated hoodies, and unrated graphic tees are still rejected, PASS, spec 6.4, ISSUE-34
+- fix ISSUE-34 interview unrated: warning appears in the outfit card as well as the explanation, SKIPPED UI, spec 6.4, ISSUE-34
+
+Notes on test design, so a future fix does not need to guess:
+- The diversity message test accepts a message in the build result,
+  an outfit message field, or an explanation line that mentions a
+  distinct pair, diversity, fewer outfits, or a small wardrobe. It
+  does not invent one exact field name, because ISSUE-33 does not
+  name the message channel. The Agent A fix must surface a message
+  in one of those places, or update this test through Agent D with
+  the chosen channel documented.
+- The unrated warning test accepts any explanation warning that
+  names unrated items and says palette fit is not verified, because
+  ISSUE-34 gives the warning wording as an example, not as an exact
+  string. The outfit card warning is UI only and is not checked by
+  the engine test.
+- An all-unrated outfit is checked as not verified by requiring the
+  warning in the explanation and by asserting no verified flag is
+  true on the outfit. The engine returns no verified flag today, so
+  the warning is the operative not-verified signal at engine level,
+  and the card must not show a verified badge, which is the skipped
+  UI check.
 
 ## Mapping: integration tests
 
@@ -423,6 +534,23 @@ item 5. No live Supabase project was tested.
 9. No missing decision was guessed. No spec change and no contract change
    is proposed in this branch. Agent C changed no production code and no
    contract file.
+
+10. Fix run open items for Agent D (ISSUE-32, ISSUE-33, ISSUE-34, this
+branch). Impact: the React shuffle button in app/page.tsx and the
+outfit card warning cannot be executed by node:test, so 6 new tests
+are skipped and are not passes. The spec level shuffle and unrated
+oracle tests pass, and the engine diversity and unrated tests fail
+pre-fix as documented above, but the button and card still need a
+browser or manual check after the Agent A fix. Also, ISSUE-33 does
+not name the channel for the fewer outfits message, and ISSUE-34
+gives the warning wording as an example, so the new tests accept
+several message channels and any warning that names unrated items
+and says palette fit is not verified, rather than inventing one
+exact field or string. Action for Agent D: arrange the browser or
+manual shuffle and card checks, confirm the message channel chosen
+by Agent A, and re-run the ISSUE-31 gate after the fix before
+merging. Do not merge this branch as a green suite while the 7
+pre-fix failures stand.
 
 ## No secrets, no em dashes
 
