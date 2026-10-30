@@ -15,6 +15,7 @@ import { useRequireAuth } from '../../lib/auth';
 import { api } from '../../lib/api-client';
 import type { Palette, Profile } from '../../lib/types';
 import { Button, Card, ErrorText, Field, Input, SecondaryButton } from '../../components/ui';
+import PwaInstall from '../../components/PwaInstall';
 
 const FREE_TIER_BYTES = 1024 * 1024 * 1024;
 const ESTIMATED_BYTES_PER_PHOTO = 200 * 1024;
@@ -82,6 +83,10 @@ export default function SettingsPage() {
           <p className="text-sm text-slate-600">Build, fit, and sizes are stored as fit tags and style direction on your profile, per the frozen profile API. Edit the tags above to change how the builder treats your fit.</p>
           <Button onClick={saveProfile}>Save profile</Button>
         </div>
+      </Card>
+      <Card>
+        <h2 className="font-bold">Install app (PWA)</h2>
+        <div className="mt-2"><PwaInstall /></div>
       </Card>
       <Card>
         <h2 className="font-bold">Palette management</h2>
