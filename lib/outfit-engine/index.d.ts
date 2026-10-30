@@ -12,7 +12,9 @@ export interface EngineOutfit {
   items: EngineOutfitItem[]; missingSlots: Slot[];
   paletteScore: number; fitScore: number; contrastScore: number; rotationScore: number; totalScore: number;
   explanation: string[]; occasion: Occasion; season: Season;
+  hasUnratedItems: boolean; unratedItemIds: string[]; allItemsUnrated: boolean;
 }
+export interface UnratedSummary { hasUnratedItems: boolean; unratedItemIds: string[]; allItemsUnrated: boolean }
 export interface BuildInput {
   items: EngineItem[]; occasion: Occasion; season: Season; vibe?: string | null;
   adviceRules?: AdviceRule[]; disliked?: unknown[]; now?: string | null;
@@ -29,6 +31,8 @@ export function isInterviewExcluded(item: EngineItem): boolean;
 export function seasonMatches(item: EngineItem, season: Season): boolean;
 export function verdictAllowed(item: EngineItem, occasion: Occasion): boolean;
 export function validateShuffleReplacement(input: ShuffleReplacementInput): ShuffleCheck;
+export function isUnrated(item: EngineItem): boolean;
+export function unratedSummary(entries: EngineOutfitItem[] | EngineItem[]): UnratedSummary;
 export function slotForCategory(category: string, name?: string): Slot | null;
 export function combinationKey(itemIds: string[]): string;
 export function isDisliked(combinationIds: string[], disliked: unknown[], now?: string | null): boolean;
