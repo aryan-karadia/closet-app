@@ -69,3 +69,9 @@ Status key: open, in progress, in review, merged, blocked.
 3. Agent B: ISSUE-23 contract, then ISSUE-24, ISSUE-25, ISSUE-26, then resource APIs per epic.
 4. Agent A: frontend per issue, only after the contract for that issue is frozen.
 5. Agent D: integration, mismatch routing, and merge branch by branch to main, only after Agent C tests pass.
+
+## Follow-up issues from ISSUE-31 gate, 2026-10-30
+
+- ISSUE-32: Shuffle slot must re-check all hard rules - Owner: A - Status: open - File: `docs/issues/ISSUE-32.md`
+- ISSUE-33: Diversity fill must not repeat top and outer pairs - Owner: A - Status: open - File: `docs/issues/ISSUE-33.md`
+- ISSUE-34: Decide whether unrated items are excluded from interview builds - Owner: D - Status: open - File: `docs/issues/ISSUE-34.md`

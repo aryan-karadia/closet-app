@@ -2,7 +2,7 @@
 
 - Epic: E6
 - Owner agent: C
-- Status: open
+- Status: open (gate failed, see routing notes)
 - Dependencies: All merged issues
 - Spec reference: See acceptance criteria and the build spec.
 
@@ -22,4 +22,4 @@ End to end pass of Agent C tests against Agent A frontend and Agent B backend pe
 
 ## Routing notes
 
-None yet. Agent D records any mismatch routing here.
+Gate failed 2026-10-30, report merged to main as baa85b2, but ISSUE-31 stays open. Bugs routed: ISSUE-32 shuffle bypass (Agent A), ISSUE-33 diversity fill (Agent A), ISSUE-34 interview null verdict decision (Agent D). Spec gaps and unproven items are listed in tests/INTEGRATION-GATE.md and docs/merges.md. Re-run the gate after fixes before any MVP-done claim.
