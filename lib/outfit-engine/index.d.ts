@@ -19,6 +19,15 @@ export interface BuildInput {
 }
 export function buildOutfits(input: BuildInput): EngineOutfit[];
 export function build(input: BuildInput): EngineOutfit[];
+export interface ShuffleCheck { valid: boolean; reason: string }
+export interface ShuffleReplacementInput {
+  replacement: EngineItem; outfitItems: EngineOutfitItem[]; slot?: Slot;
+  occasion: Occasion; season: Season; disliked?: unknown[]; now?: string | null;
+}
+export function isInterviewExcluded(item: EngineItem): boolean;
+export function seasonMatches(item: EngineItem, season: Season): boolean;
+export function verdictAllowed(item: EngineItem, occasion: Occasion): boolean;
+export function validateShuffleReplacement(input: ShuffleReplacementInput): ShuffleCheck;
 export function slotForCategory(category: string, name?: string): Slot | null;
 export function combinationKey(itemIds: string[]): string;
 export function isDisliked(combinationIds: string[], disliked: unknown[], now?: string | null): boolean;
