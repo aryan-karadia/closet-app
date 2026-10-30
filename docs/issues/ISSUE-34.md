@@ -2,7 +2,20 @@
 
 - Epic: E3
 - Owner agent: D
-- Status: open
+- Status: decision recorded 2026-10-30, implementation open
+
+## Decision recorded 2026-10-30, source: user choice
+
+Allow unrated items in interview builds, with a warning.
+
+Implementation rule, exact:
+- Interview builds still reject Avoid items and still enforce interview category exclusions (no hoodies, no graphic tees).
+- Perfect and Strong rated items are preferred and sorted first.
+- Items with a null or missing paletteVerdict are allowed only as a fallback, and every such item and every outfit containing one must show a clear warning, for example "Unrated item included, palette fit not verified", in both the outfit card and the explanation.
+- An outfit made only of unrated items must not be presented as a verified interview outfit.
+- Do not silently treat unrated as Strong.
+
+This decision was recorded by Agent D before any code fix, as required by the issue.
 - Dependencies: ISSUE-16, ISSUE-31 gate bug 3
 - Spec reference: See acceptance criteria and the build spec, and tests/INTEGRATION-GATE.md.
 
