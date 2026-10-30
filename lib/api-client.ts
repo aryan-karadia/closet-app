@@ -59,7 +59,7 @@ export const api = {
   reratePalette: (id: string) => apiFetch<{ paletteId: string; reratedCount: number; skippedCount: number; totalCount: number }>('/api/palettes/' + id + '/rerate', { method: 'POST' }),
 
   listPaletteColours: (paletteId: string, params: Record<string, string | number | undefined> = {}) => apiFetch<Paginated<PaletteColor>>('/api/palettes/' + paletteId + '/colours' + qs(params)),
-  createPaletteColour: (paletteId: string, body: Partial<PaletteColor> & { name: string; hex: string; family: string; role: string }) => apiFetch<PaletteColor>('/api/palettes/' + paletteId + '/colours', { method: 'POST', body: JSON.stringify(body) }),
+  createPaletteColour: (paletteId: string, body: Record<string, unknown>) => apiFetch<PaletteColor>('/api/palettes/' + paletteId + '/colours', { method: 'POST', body: JSON.stringify(body) }),
   patchPaletteColour: (paletteId: string, colourId: string, body: Partial<PaletteColor>) => apiFetch<PaletteColor>('/api/palettes/' + paletteId + '/colours/' + colourId, { method: 'PATCH', body: JSON.stringify(body) }),
   deletePaletteColour: (paletteId: string, colourId: string) => apiFetch<{ deleted: boolean; id: string }>('/api/palettes/' + paletteId + '/colours/' + colourId, { method: 'DELETE' }),
 
