@@ -6,6 +6,9 @@
 - Dependencies: ISSUE-06, ISSUE-07, ISSUE-10
 - Spec reference: See acceptance criteria and the build spec.
 
+
+Fixed stack for Agent A: Tailwind CSS, shadcn/ui, React, Next.js with TypeScript. No Vue, no other UI framework. See docs/stack-decision-agent-a.md, recorded 2026-10-30.
+
 ## Acceptance criteria
 
 Add, edit, detail, soft delete with 30 day restore, score badge with number plus verdict text for colour blind friendly use, dominant colours with percentages, nearest palette colour, reason, and manual override with note. Spec sections 5.1, 5.4, and 7.

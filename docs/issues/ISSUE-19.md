@@ -6,6 +6,9 @@
 - Dependencies: ISSUE-13, ISSUE-17
 - Spec reference: See acceptance criteria and the build spec.
 
+
+Fixed stack for Agent A: Tailwind CSS, shadcn/ui, React, Next.js with TypeScript. No Vue, no other UI framework. See docs/stack-decision-agent-a.md, recorded 2026-10-30.
+
 ## Acceptance criteria
 
 List saved outfits with occasion and date saved, Log worn action, and a Wear this interview outfit shortcut if an interview outfit is saved. Spec sections 6.4 and 10.

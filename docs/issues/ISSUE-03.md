@@ -6,6 +6,9 @@
 - Dependencies: ISSUE-01 contract frozen for palette read
 - Spec reference: See acceptance criteria and the build spec.
 
+
+Fixed stack for Agent A: Tailwind CSS, shadcn/ui, React, Next.js with TypeScript. No Vue, no other UI framework. See docs/stack-decision-agent-a.md, recorded 2026-10-30.
+
 ## Acceptance criteria
 
 Browser pdf.js text extraction classifies core, neutral, avoid, and ignore sections. Makeup, blush, lip, hair, nail, and Facetune sections are ignored and never saved as clothing colours unless the user explicitly adds them. Spec section 4.3 steps 1 and 4.
