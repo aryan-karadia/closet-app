@@ -17,8 +17,9 @@ export interface BuildInput {
   items: EngineItem[]; occasion: Occasion; season: Season; vibe?: string | null;
   adviceRules?: AdviceRule[]; disliked?: unknown[]; now?: string | null;
 }
-export function buildOutfits(input: BuildInput): EngineOutfit[];
-export function build(input: BuildInput): EngineOutfit[];
+export type BuildResult = EngineOutfit[] & { diversityMessage?: string | null };
+export function buildOutfits(input: BuildInput): BuildResult;
+export function build(input: BuildInput): BuildResult;
 export function slotForCategory(category: string, name?: string): Slot | null;
 export function combinationKey(itemIds: string[]): string;
 export function isDisliked(combinationIds: string[], disliked: unknown[], now?: string | null): boolean;
