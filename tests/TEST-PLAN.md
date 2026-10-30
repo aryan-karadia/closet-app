@@ -1,8 +1,9 @@
 # Test plan: spec based test suite
 
 Issues: ISSUE-29 (spec based unit and integration test suite) and ISSUE-30
-(contract test skeletons and CI check script). Owner: Agent C.
-Branch: test/ISSUE-29-spec-test-suite. Do not merge to main. Agent D merges only.
+(contract test skeletons and CI check script, now updated to the Agent B
+draft contract). Owner: Agent C.
+Branch: test/ISSUE-30-contract-update. Do not merge to main. Agent D merges only.
 
 ## How to run
 
@@ -44,6 +45,32 @@ skipped. No real credentials are used anywhere. Placeholders only.
   only. Paths are to be confirmed against the frozen contract in
   docs/api-contract.md (ISSUE-23, owned by Agent B). No path in a skeleton
   test is final.
+- UPDATED TO DRAFT CONTRACT: a contract test updated to the real paths,
+  request schemas, response schemas, and error cases in the Agent B draft
+  contract in docs/api-contract.md (ISSUE-23). The contract is DRAFT, not
+  frozen. Agent D freezes it after this update. Where the contract doc and
+  docs/openapi.yaml disagree, the contract doc wins, and the disagreements
+  are listed under Blocked below.
+
+## Latest run (2026-10-30, ISSUE-30 contract update, on test/ISSUE-30-contract-update)
+
+- Without CLOSET_TEST_BASE_URL: Total 135, Pass 113, Fail 0, Skipped 22.
+  Skipped: outfit engine 5 (Agent A, ISSUE-16), palette ingester 3
+  (Agent A, ISSUE-03 and ISSUE-04), live API and auth 14 (impl-gated
+  tests gated on CLOSET_TEST_BASE_URL).
+- With CLOSET_TEST_BASE_URL=http://localhost:3101 against a local dev
+  server (CLOSET_TEST_MODE=1 PORT=3101 node scripts/dev-server.js):
+  Total 135, Pass 126, Fail 1, Skipped 8 (outfit engine 5, palette
+  ingester 3). The single failure is a genuine contract versus
+  implementation mismatch, not a test error: POST
+  /api/outfits/:outfitId/items with a duplicate item in a free slot
+  returns 201 and moves the item, while the contract requires 400.
+  See Blocked item 5. No live Supabase project was tested. No live
+  project exists.
+- Baseline on main before this update (Agent D verified): Total 111,
+  Pass 98, Fail 0, Skipped 13. This update adds 24 tests: unit API
+  contract 8 to 16, integration API contract 4 to 11, impl-gated API
+  and auth 6 to 15.
 
 ## Latest run (2026-10-30, before any feature code)
 
@@ -168,21 +195,32 @@ one soft detail, silver over gold, plus sleeve fit and neckline.
 - auth: RLS must be enforced on user_id for every table, GREEN, spec 16.3, ISSUE-21
 - auth: no service role key in client code is a spec rule, GREEN, spec 16.2, ISSUE-20
 
-### tests/unit/api-contract.test.js, 8 tests, GREEN as SKELETON, ISSUE-30, spec 8, ISSUE-23
+### tests/unit/api-contract.test.js, 16 tests, UPDATED TO DRAFT CONTRACT, ISSUE-30, spec 8, ISSUE-23
 
-- api contract skeleton: all spec section 8 resources are listed, SKELETON, spec 8, ISSUE-30
-- api contract skeleton: each resource has a field list from spec section 8, SKELETON, spec 8, ISSUE-30
-- api contract skeleton: items keep nullable location field only, not a location flow, SKELETON, spec 3 and 8, ISSUE-30
-- api contract skeleton: request and response schemas use the same resource fields, SKELETON, spec 8, ISSUE-30
-- api contract skeleton: validation errors return 400 for invalid input, SKELETON, ISSUE-26 and ISSUE-30
-- api contract skeleton: 401 unauthenticated, 403 wrong owner, 404 missing resource, SKELETON, ISSUE-30
-- api contract skeleton: single consistent JSON error shape, candidate only, not frozen, SKELETON, ISSUE-26 and ISSUE-30
-- api contract skeleton: paths are to be confirmed against the frozen contract, SKELETON, ISSUE-23 and ISSUE-30
+- api contract draft: endpoint table has all 52 contract endpoints, UPDATED TO DRAFT CONTRACT, ISSUE-30
+- api contract draft: auth session and profile paths and shapes, UPDATED TO DRAFT CONTRACT, ISSUE-30
+- api contract draft: palette paths, create shape, versioning and rerate, UPDATED TO DRAFT CONTRACT, ISSUE-30
+- api contract draft: palette colour paths, enums, hex rule, and derivation, UPDATED TO DRAFT CONTRACT, ISSUE-30
+- api contract draft: avoid rule paths, required ranges, and starting rules, UPDATED TO DRAFT CONTRACT, ISSUE-30
+- api contract draft: item paths, enums, and lifecycle shapes, UPDATED TO DRAFT CONTRACT, ISSUE-30
+- api contract draft: item colours replace the full set, max 3, one primary, UPDATED TO DRAFT CONTRACT, ISSUE-30
+- api contract draft: uploads accept WebP only, with kind width limits, and signed URLs, UPDATED TO DRAFT CONTRACT, ISSUE-30
+- api contract draft: outfit paths, enums, duplicate rules, and missing item distinction, UPDATED TO DRAFT CONTRACT, ISSUE-30
+- api contract draft: wear log paths, required fields, and delete effects, UPDATED TO DRAFT CONTRACT, ISSUE-30
+- api contract draft: advice rule paths, required fields, and seed idempotency, UPDATED TO DRAFT CONTRACT, ISSUE-30
+- api contract draft: export is a POST returning a ZIP, not JSON, UPDATED TO DRAFT CONTRACT, ISSUE-30
+- api contract draft: single JSON error shape and full error code table, UPDATED TO DRAFT CONTRACT, ISSUE-30
+- api contract draft: auth rules, ownership order, validation rules, and pagination, UPDATED TO DRAFT CONTRACT, ISSUE-30
+- api contract draft: contract doc wins over openapi, disagreements recorded, UPDATED TO DRAFT CONTRACT, ISSUE-30
+- api contract draft: no skeleton placeholders remain in this file, UPDATED TO DRAFT CONTRACT, ISSUE-30
 
-Resource names used, spec 8: palettes, palette colours, avoid rules,
-items, item colours, advice rules, outfits, outfit items, wear logs.
-Paths are to be confirmed against the frozen contract. No path in these
-tests is final.
+All 52 paths are the real Agent B draft contract paths, including
+GET /api/auth/session, GET and PATCH /api/profile, palette activate,
+versions, and rerate, palette colours, avoid rules, item restore and
+permanent-delete, item colours, POST /api/uploads and
+POST /api/uploads/signed-url, GET /api/storage/:path (local dev server
+only), outfit items, wear logs, advice rules seed, and POST /api/export.
+The contract is DRAFT, not frozen. Agent D freezes it after this update.
 
 ## Mapping: integration tests
 
@@ -201,12 +239,23 @@ tests is final.
 - outfit flow: dislike stores exact combination and reason, items are not deleted, GREEN, spec 6.7
 - outfit flow: shuffle one slot replaces only that slot, GREEN, spec 6.1
 
-### tests/integration/api-contract.test.js, 4 tests, GREEN as SKELETON, ISSUE-30, spec 8, ISSUE-23
+### tests/integration/api-contract.test.js, 11 tests, UPDATED TO DRAFT CONTRACT, ISSUE-30, spec 8, ISSUE-23
 
-- api contract integration skeleton: every resource has CRUD expectations in skeleton, SKELETON, spec 8
-- api contract integration skeleton: error cases map to one consistent shape, SKELETON, ISSUE-26
-- api contract integration skeleton: unauthenticated live calls are pending, not faked, SKELETON, ISSUE-30
-- api contract integration skeleton: paths are to be confirmed against the frozen contract, SKELETON, ISSUE-23
+- api contract integration draft: every resource has its contract CRUD matrix, UPDATED TO DRAFT CONTRACT, ISSUE-30
+- api contract integration draft: error cases map to one consistent shape with all six codes, UPDATED TO DRAFT CONTRACT, ISSUE-30
+- api contract integration draft: auth flow, API returns 401 not a redirect, UPDATED TO DRAFT CONTRACT, ISSUE-30
+- api contract integration draft: palette lifecycle, activate, versions, rerate, UPDATED TO DRAFT CONTRACT, ISSUE-30
+- api contract integration draft: item lifecycle, soft delete, restore, permanent delete, UPDATED TO DRAFT CONTRACT, ISSUE-30
+- api contract integration draft: outfit and wear log flows share item and outfit ids, UPDATED TO DRAFT CONTRACT, ISSUE-30
+- api contract integration draft: upload flow stores paths, never signed URLs, UPDATED TO DRAFT CONTRACT, ISSUE-30
+- api contract integration draft: advice seed and enabled filter flow, UPDATED TO DRAFT CONTRACT, ISSUE-30
+- api contract integration draft: export returns ZIP, errors still return JSON shape, UPDATED TO DRAFT CONTRACT, ISSUE-30
+- api contract integration draft: pagination envelope and list versus single shapes, UPDATED TO DRAFT CONTRACT, ISSUE-30
+- api contract integration draft: live proof lives in impl-gated tests, not here, UPDATED TO DRAFT CONTRACT, ISSUE-30
+
+These are self contained flow expectations against the draft contract.
+They do not call a live server. Live proof is in
+tests/impl-gated/api-and-auth.test.js.
 
 ### tests/integration/auth-flow.test.js, 3 tests, GREEN, ISSUE-29, ISSUE-20, ISSUE-21
 
@@ -250,17 +299,29 @@ Agents A or B until these tests run for real and pass.
 - impl advice rules: disabled rule never affects scoring, RED
 - impl advice rules: gate state marker, marker pass only
 
-### tests/impl-gated/api-and-auth.test.js, 6 tests: 1 marker pass, 5 skipped, RED, ISSUE-20, ISSUE-21, ISSUE-23, ISSUE-30
+### tests/impl-gated/api-and-auth.test.js, 15 tests: 1 marker pass, 14 live (skipped without CLOSET_TEST_BASE_URL), UPDATED TO DRAFT CONTRACT, ISSUE-20, ISSUE-21, ISSUE-23, ISSUE-30
 
-- impl api: unauthenticated request returns 401, RED, SKELETON path, to be confirmed
-- impl api: wrong owner request returns 403, RED, SKELETON path, to be confirmed
-- impl api: missing resource returns 404, RED, SKELETON path, to be confirmed
-- impl api: invalid input returns 400 with single consistent JSON error shape, RED, SKELETON path, to be confirmed
-- impl auth: protected route redirects unauthenticated users, API returns 401, RED
+- impl api: unauthenticated requests return 401, API does not redirect, UPDATED TO DRAFT CONTRACT, ISSUE-30
+- impl api: session and profile work, profile auto created, UPDATED TO DRAFT CONTRACT, ISSUE-30
+- impl api: wrong owner returns 403 and missing resource returns 404, UPDATED TO DRAFT CONTRACT, ISSUE-30
+- impl api: invalid input returns 400 with single consistent JSON error shape and details, UPDATED TO DRAFT CONTRACT, ISSUE-30
+- impl api: method not listed for a path returns 405, UPDATED TO DRAFT CONTRACT, ISSUE-30
+- impl api: palette, colour, and avoid rule CRUD with embedded single read, UPDATED TO DRAFT CONTRACT, ISSUE-30
+- impl api: palette activate, versions, and rerate, UPDATED TO DRAFT CONTRACT, ISSUE-30
+- impl api: item CRUD, colours replace, manual score, and soft delete lifecycle, UPDATED TO DRAFT CONTRACT, ISSUE-30
+- impl api: outfit CRUD, duplicate slot, outfit items, and missing item distinction, UPDATED TO DRAFT CONTRACT, ISSUE-30. Live run fails on this test only, because of the duplicate item mismatch in Blocked item 5. The test follows the contract and was not changed to hide the mismatch.
+- impl api: wear log increments counts and delete decrements without rewriting lastWornAt, UPDATED TO DRAFT CONTRACT, ISSUE-30
+- impl api: advice rules CRUD and seed idempotency, UPDATED TO DRAFT CONTRACT, ISSUE-30
+- impl api: uploads accept WebP only, signed URL serves file, storage without token is 401, UPDATED TO DRAFT CONTRACT, ISSUE-30
+- impl api: export returns a ZIP for an authenticated user, UPDATED TO DRAFT CONTRACT, ISSUE-30
+- impl api: pagination envelope and pageSize clamping, UPDATED TO DRAFT CONTRACT, ISSUE-30
 - impl api and auth: gate state marker, marker pass only
 
-Paths in this file are placeholders to be confirmed against the frozen
-contract. They are not final endpoints.
+All paths in this file are real draft contract paths. Without
+CLOSET_TEST_BASE_URL the 14 live tests are skipped and the marker
+passes. With CLOSET_TEST_BASE_URL set to a local dev server, 13 of the
+14 live tests pass and 1 fails on the documented mismatch in Blocked
+item 5. No live Supabase project was tested.
 
 ## What is NOT tested here, and why
 
@@ -269,36 +330,99 @@ contract. They are not final endpoints.
   Those need production code, a device, or a built app, and belong in later
   Agent C passes (ISSUE-31) once Agents A and B land code. They are not
   faked here with fixtures.
-- Exact API paths, exact production function signatures, and exact JSON
-  error shape wording. Those are Agent B decisions in the frozen contract
-  (ISSUE-23), routed through Agent D. Skeleton tests check the shape
-  concept, not the final wording.
-- docs/api-contract.md was not changed into a final contract. That file
-  stays a placeholder owned by Agent B. Only skeleton notes were added in
-  tests, not a frozen contract.
+- Exact production function signatures. Those are Agent A and Agent B
+  decisions, routed through Agent D.
+- The frozen API contract. Contract tests are now updated to the Agent B
+  draft contract (ISSUE-23), not to a frozen contract. docs/api-contract.md
+  and docs/openapi.yaml were not changed by Agent C. Agent D freezes the
+  contract after this update. Contract versus OpenAPI disagreements found
+  by Agent C are listed in Blocked item 4, with the contract doc winning.
 
 ## Blocked
 
-1. Frozen API contract missing (ISSUE-23, owned by Agent B, not yet
-   written). Impact: all contract tests are skeletons. Paths, exact
-   request and response schemas, and exact error shape wording cannot be
-   finalised until Agent B drafts the contract and Agent D freezes it.
-   Action for Agent D: route ISSUE-23 to Agent B, then ask Agent C to
-   update skeleton tests to match the frozen contract. Do not guess a
-   spec change.
-2. Production function signatures missing. Impact: implementation-gated
+1. Frozen API contract missing (ISSUE-23, owned by Agent B, drafted but
+   not frozen). Impact: contract tests are UPDATED TO DRAFT CONTRACT,
+   not to a frozen contract. Paths, request and response schemas, and
+   error shape now match the draft in docs/api-contract.md, but Agent D
+   has not frozen it yet, so a later freeze change would need another
+   Agent C update. Action for Agent D: freeze the contract, or route any
+   freeze change to Agent C for a test update. Do not guess a contract
+   change.
+4. Contract versus OpenAPI disagreements (Agent B owns both files,
+   correction through Agent D). Agent C changed neither file. The
+   contract doc wins in every case below, per Agent B report, and the
+   updated tests follow the contract doc:
+   a. GET /api/storage/:path is in the contract table but has no path
+      entry in docs/openapi.yaml.
+   b. 405 METHOD_NOT_ALLOWED is in the contract error table but no 405
+      response appears in docs/openapi.yaml.
+   c. List query params in the contract are missing from
+      docs/openapi.yaml: palettes isActive and sort, palette colours
+      sort, avoid rules sort, item colours and outfit items pagination.
+   d. Contract list responses exclude embedded children (palettes list
+      without colours and avoidRules, items list without colours,
+      outfits list without items), but docs/openapi.yaml reuses the
+      full Palette, Item, and Outfit schemas for list responses. The
+      local implementation follows the contract doc on this point,
+      verified by live probe.
+   e. Upload width and height maxima in the contract (image 1200,
+      thumbnail 400, height 4000) and the 5MB decoded size limit are
+      missing from docs/openapi.yaml UploadCreate, which only sets
+      minimum 1.
+   f. Contract page and pageSize out of range values are clamped, but
+      docs/openapi.yaml PageSize bounds (1 to 100) read as rejection
+      rather than clamping. Non numeric values are 400 in the contract.
+   g. Outfit item delete response in the contract is
+      { deleted, outfitId, itemId }, but docs/openapi.yaml Deleted
+      schema only has deleted, id, and softDeleted.
+   h. Export Content-Disposition filename pattern
+      closet-export-<date>.zip is in the contract but not specified
+      in docs/openapi.yaml.
+   i. PaletteColour labL range 0 to 100 in the contract has no min or
+      max in docs/openapi.yaml PaletteColourCreate.
+5. Contract versus implementation mismatch, POST
+   /api/outfits/:outfitId/items duplicate item (Agent B owns the
+   implementation, routing through Agent D). Expected per contract:
+   adding an item already in the outfit returns 400 VALIDATION_ERROR,
+   on this endpoint as well as on POST /api/outfits. Actual on the
+   local dev server: adding the same item in a free slot returns 201
+   and moves the item to the new slot, keyed by itemId, so the outfit
+   ends with one entry in the new slot and the old slot entry is gone.
+   Duplicate slot with a different item correctly returns 400, and
+   POST /api/outfits create correctly returns 400 for a duplicate
+   item, so only the outfit items endpoint duplicate item check is
+   missing. Impact: the impl-gated outfit test fails in live runs
+   (full live run: 1 fail of 135) until this is fixed. The test was
+   not changed to hide the mismatch. Recommendation: Agent B adds a
+   duplicate item check to POST /api/outfits/:outfitId/items returning
+   400 VALIDATION_ERROR before any upsert, matching the create
+   endpoint, then Agent C re-runs the live check. Agent D decides
+   whether to merge this test branch before or after that fix, since
+   the unserved check passes (113 pass, 0 fail) but the live check
+   does not.
+6. Remaining skeleton items: none in the three contract test files.
+   All skeleton paths, request schemas, response schemas, and error
+   cases in tests/unit/api-contract.test.js,
+   tests/integration/api-contract.test.js, and
+   tests/impl-gated/api-and-auth.test.js are updated to the draft
+   contract. Remaining skipped items are unchanged: outfit engine 5
+   (Agent A, ISSUE-16), palette ingester 3 (Agent A, ISSUE-03 and
+   ISSUE-04), and live API and auth 14 without CLOSET_TEST_BASE_URL.
+7. Production function signatures missing. Impact: implementation-gated
    tests in tests/impl-gated/ are interface skeletons that check module
    presence, not full production behaviour, because Agent A and Agent B
    have not defined the rating, outfit engine, palette ingester, or advice
    rule function signatures yet. Action for Agent D: when Agents A and B
    define those signatures, route them to Agent C to tighten the gated
    tests with real inputs and expected outputs before merging feature code.
-3. No test server exists. Impact: live API and auth tests are skipped
-   unless CLOSET_TEST_BASE_URL is set. Action for Agent D: provide a test
-   server target when backend code lands, or accept that ISSUE-31 covers
-   the live gate.
-4. No missing decision was guessed. No spec change is proposed in this
-   branch.
+8. No live Supabase project exists. Impact: live API and auth tests run
+   against the local dev server only (CLOSET_TEST_MODE=1, test tokens),
+   and are skipped unless CLOSET_TEST_BASE_URL is set. Supabase backed
+   behaviour is untested. Action for Agent D: accept that ISSUE-31 covers
+   the live Supabase gate.
+9. No missing decision was guessed. No spec change and no contract change
+   is proposed in this branch. Agent C changed no production code and no
+   contract file.
 
 ## No secrets, no em dashes
 
