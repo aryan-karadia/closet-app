@@ -17,8 +17,8 @@ Status key: open, in progress, in review, merged, blocked.
 
 - ISSUE-01: Palette and palette colour CRUD API - Owner: B - Status: merged - File: `docs/issues/ISSUE-01.md`
 - ISSUE-02: Avoid rules CRUD and validation - Owner: B - Status: merged - File: `docs/issues/ISSUE-02.md`
-- ISSUE-03: PDF text extraction and beauty section filter, browser - Owner: A - Status: open - File: `docs/issues/ISSUE-03.md`
-- ISSUE-04: Palette correction screen - Owner: A - Status: open - File: `docs/issues/ISSUE-04.md`
+- ISSUE-03: PDF text extraction and beauty section filter, browser - Owner: A - Status: merged - File: `docs/issues/ISSUE-03.md`
+- ISSUE-04: Palette correction screen - Owner: A - Status: merged - File: `docs/issues/ISSUE-04.md`
 - ISSUE-05: Palette versioning and re-rate all items - Owner: B - Status: merged - File: `docs/issues/ISSUE-05.md`
 
 ### E2
@@ -26,26 +26,26 @@ Status key: open, in progress, in review, merged, blocked.
 - ISSUE-06: Item CRUD API - Owner: B - Status: merged - File: `docs/issues/ISSUE-06.md`
 - ISSUE-07: Item colour storage API - Owner: B - Status: merged - File: `docs/issues/ISSUE-07.md`
 - ISSUE-08: Image upload signed URLs via StorageProvider - Owner: B - Status: merged - File: `docs/issues/ISSUE-08.md`
-- ISSUE-09: Browser background removal confirm flow and colour clustering - Owner: A - Status: open - File: `docs/issues/ISSUE-09.md`
+- ISSUE-09: Browser background removal confirm flow and colour clustering - Owner: A - Status: merged - File: `docs/issues/ISSUE-09.md`
 - ISSUE-10: Delta E rating engine, shared pure TypeScript lib - Owner: B - Status: merged - File: `docs/issues/ISSUE-10.md`
-- ISSUE-11: Item add, edit, and detail UI with score badge - Owner: A - Status: open - File: `docs/issues/ISSUE-11.md`
-- ISSUE-12: Wardrobe grid filters, sort, and search - Owner: A - Status: open - File: `docs/issues/ISSUE-12.md`
+- ISSUE-11: Item add, edit, and detail UI with score badge - Owner: A - Status: merged - File: `docs/issues/ISSUE-11.md`
+- ISSUE-12: Wardrobe grid filters, sort, and search - Owner: A - Status: merged - File: `docs/issues/ISSUE-12.md`
 
 ### E3
 
 - ISSUE-13: Outfit and outfit item CRUD API - Owner: B - Status: merged - File: `docs/issues/ISSUE-13.md`
 - ISSUE-14: Wear log CRUD and wear count - Owner: B - Status: merged - File: `docs/issues/ISSUE-14.md`
 - ISSUE-15: Advice rules CRUD API - Owner: B - Status: merged - File: `docs/issues/ISSUE-15.md`
-- ISSUE-16: Browser rule engine, pruned beam search in Web Worker - Owner: A - Status: open - File: `docs/issues/ISSUE-16.md`
-- ISSUE-17: Outfit Builder home screen - Owner: A - Status: open - File: `docs/issues/ISSUE-17.md`
-- ISSUE-18: Advice Rules editor UI - Owner: A - Status: open - File: `docs/issues/ISSUE-18.md`
-- ISSUE-19: Saved Outfits screen - Owner: A - Status: open - File: `docs/issues/ISSUE-19.md`
+- ISSUE-16: Browser rule engine, pruned beam search in Web Worker - Owner: A - Status: merged - File: `docs/issues/ISSUE-16.md`
+- ISSUE-17: Outfit Builder home screen - Owner: A - Status: merged - File: `docs/issues/ISSUE-17.md`
+- ISSUE-18: Advice Rules editor UI - Owner: A - Status: merged - File: `docs/issues/ISSUE-18.md`
+- ISSUE-19: Saved Outfits screen - Owner: A - Status: merged - File: `docs/issues/ISSUE-19.md`
 
 ### E4
 
-- ISSUE-20: Google Auth via Supabase Auth, session, protected routes - Owner: A - Status: open - File: `docs/issues/ISSUE-20.md`
+- ISSUE-20: Google Auth via Supabase Auth, session, protected routes - Owner: A - Status: merged - File: `docs/issues/ISSUE-20.md`
 - ISSUE-21: API auth guard and session endpoint - Owner: B - Status: merged - File: `docs/issues/ISSUE-21.md`
-- ISSUE-22: Settings and profile edit - Owner: A - Status: open - File: `docs/issues/ISSUE-22.md`
+- ISSUE-22: Settings and profile edit - Owner: A - Status: merged - File: `docs/issues/ISSUE-22.md`
 
 ### E5
 
@@ -53,7 +53,7 @@ Status key: open, in progress, in review, merged, blocked.
 - ISSUE-24: Supabase schema migrations and RLS policies - Owner: B - Status: merged - File: `docs/issues/ISSUE-24.md`
 - ISSUE-25: StorageProvider abstraction, private bucket, signed URLs - Owner: B - Status: merged - File: `docs/issues/ISSUE-25.md`
 - ISSUE-26: Validation and error handling standard - Owner: B - Status: merged - File: `docs/issues/ISSUE-26.md`
-- ISSUE-27: PWA manifest, install, and offline wardrobe view - Owner: A - Status: open - File: `docs/issues/ISSUE-27.md`
+- ISSUE-27: PWA manifest, install, and offline wardrobe view - Owner: A - Status: merged - File: `docs/issues/ISSUE-27.md`
 - ISSUE-28: Data export ZIP - Owner: B - Status: merged - File: `docs/issues/ISSUE-28.md`
 
 ### E6

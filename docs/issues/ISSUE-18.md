@@ -2,7 +2,7 @@
 
 - Epic: E3
 - Owner agent: A
-- Status: open
+- Status: merged
 - Dependencies: ISSUE-15
 - Spec reference: See acceptance criteria and the build spec.
 
@@ -25,4 +25,4 @@ List rules with enabled toggle, reason, source, edit, add, and delete. Starting 
 
 ## Routing notes
 
-None yet. Agent D records any mismatch routing here.
+Merged to main 2026-10-30 by Agent D in the Agent A merge order recorded in docs/merges.md. See merges.md for blocked items from Agent A, including dislike endpoint, account delete endpoint, storage usage endpoint, avoidTag, swatch sampling partial, and live Google sign in and Android PWA verification still pending.

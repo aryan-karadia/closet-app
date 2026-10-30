@@ -2,7 +2,7 @@
 
 - Epic: E5
 - Owner agent: A
-- Status: open
+- Status: merged
 - Dependencies: ISSUE-12, ISSUE-19
 - Spec reference: See acceptance criteria and the build spec.
 
@@ -25,4 +25,4 @@ PWA manifest, installable on Android, saved outfits and wardrobe grid viewable o
 
 ## Routing notes
 
-None yet. Agent D records any mismatch routing here.
+Merged to main 2026-10-30 by Agent D in the Agent A merge order recorded in docs/merges.md. See merges.md for blocked items from Agent A, including dislike endpoint, account delete endpoint, storage usage endpoint, avoidTag, swatch sampling partial, and live Google sign in and Android PWA verification still pending.
