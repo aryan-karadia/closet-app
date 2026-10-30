@@ -2,7 +2,7 @@
 
 - Epic: E6
 - Owner agent: C
-- Status: open
+- Status: merged
 - Dependencies: None, runs first, based on spec not code
 - Spec reference: See acceptance criteria and the build spec.
 
@@ -22,4 +22,4 @@ Unit and integration tests under tests/ based only on the spec, covering palette
 
 ## Routing notes
 
-None yet. Agent D records any mismatch routing here.
+Merged to main 2026-10-30 by Agent D, merge commit 8d344d2. Contract tests remain skeletons until Agent B drafts and Agent D freezes the API contract (ISSUE-23). Blocked items from Agent C TEST-PLAN.md: frozen contract missing, production function signatures missing, no test server yet. These are not guessed, they are routed to Agent B via Agent D.

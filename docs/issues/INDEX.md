@@ -58,8 +58,8 @@ Status key: open, in progress, in review, merged, blocked.
 
 ### E6
 
-- ISSUE-29: Spec based unit and integration test suite - Owner: C - Status: open - File: `docs/issues/ISSUE-29.md`
-- ISSUE-30: Contract test skeletons and CI check script - Owner: C - Status: open - File: `docs/issues/ISSUE-30.md`
+- ISSUE-29: Spec based unit and integration test suite - Owner: C - Status: merged - File: `docs/issues/ISSUE-29.md`
+- ISSUE-30: Contract test skeletons and CI check script - Owner: C - Status: merged - File: `docs/issues/ISSUE-30.md`
 - ISSUE-31: Integration gate, A plus B plus C end to end - Owner: C - Status: open - File: `docs/issues/ISSUE-31.md`
 
 ## Sequencing
