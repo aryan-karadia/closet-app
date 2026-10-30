@@ -10,7 +10,7 @@ export const metadata = { title: 'Closet', description: 'Personal wardrobe app: 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <head><link rel="manifest" href="/manifest.webmanifest" /></head>
+      <head><link rel="manifest" href="/manifest.webmanifest" /><meta name="theme-color" content="#111827" /><link rel="apple-touch-icon" href="/icons/icon-192.png" /></head>
       <body>
         <AuthProvider>
           <Nav />
