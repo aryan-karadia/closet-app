@@ -32,6 +32,8 @@ paths:
                 $ref: '#/components/schemas/Session'
         '401':
           $ref: '#/components/responses/Unauthenticated'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
   /api/profile:
     get:
       tags: [profile]
@@ -45,6 +47,8 @@ paths:
                 $ref: '#/components/schemas/Profile'
         '401':
           $ref: '#/components/responses/Unauthenticated'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
     patch:
       tags: [profile]
       summary: Update current user profile
@@ -64,6 +68,8 @@ paths:
           $ref: '#/components/responses/ValidationError'
         '401':
           $ref: '#/components/responses/Unauthenticated'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
         '403':
           $ref: '#/components/responses/Forbidden'
   /api/palettes:
@@ -73,6 +79,15 @@ paths:
       parameters:
         - $ref: '#/components/parameters/Page'
         - $ref: '#/components/parameters/PageSize'
+        - name: isActive
+          in: query
+          schema:
+            type: boolean
+        - name: sort
+          in: query
+          schema:
+            type: string
+            enum: [recent, name]
       responses:
         '200':
           description: Palette list
@@ -82,6 +97,8 @@ paths:
                 $ref: '#/components/schemas/PaletteList'
         '401':
           $ref: '#/components/responses/Unauthenticated'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
     post:
       tags: [palettes]
       summary: Create a palette
@@ -102,6 +119,8 @@ paths:
           $ref: '#/components/responses/ValidationError'
         '401':
           $ref: '#/components/responses/Unauthenticated'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
   /api/palettes/{id}:
     parameters:
       - name: id
@@ -121,6 +140,8 @@ paths:
                 $ref: '#/components/schemas/Palette'
         '401':
           $ref: '#/components/responses/Unauthenticated'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
         '403':
           $ref: '#/components/responses/Forbidden'
         '404':
@@ -144,6 +165,8 @@ paths:
           $ref: '#/components/responses/ValidationError'
         '401':
           $ref: '#/components/responses/Unauthenticated'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
         '403':
           $ref: '#/components/responses/Forbidden'
         '404':
@@ -160,6 +183,8 @@ paths:
                 $ref: '#/components/schemas/Deleted'
         '401':
           $ref: '#/components/responses/Unauthenticated'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
         '403':
           $ref: '#/components/responses/Forbidden'
         '404':
@@ -183,6 +208,8 @@ paths:
                 $ref: '#/components/schemas/Palette'
         '401':
           $ref: '#/components/responses/Unauthenticated'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
         '403':
           $ref: '#/components/responses/Forbidden'
         '404':
@@ -216,6 +243,8 @@ paths:
                 $ref: '#/components/schemas/Palette'
         '401':
           $ref: '#/components/responses/Unauthenticated'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
         '403':
           $ref: '#/components/responses/Forbidden'
         '404':
@@ -239,6 +268,8 @@ paths:
                 $ref: '#/components/schemas/RerateResult'
         '401':
           $ref: '#/components/responses/Unauthenticated'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
         '403':
           $ref: '#/components/responses/Forbidden'
         '404':
@@ -254,10 +285,17 @@ paths:
       tags: [palettes]
       summary: List palette colours
       parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
         - name: role
           in: query
           schema:
             $ref: '#/components/schemas/PaletteRole'
+        - name: sort
+          in: query
+          schema:
+            type: string
+            enum: [name, recent]
       responses:
         '200':
           description: Palette colour list
@@ -267,6 +305,8 @@ paths:
                 $ref: '#/components/schemas/PaletteColourList'
         '401':
           $ref: '#/components/responses/Unauthenticated'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
         '403':
           $ref: '#/components/responses/Forbidden'
         '404':
@@ -291,6 +331,8 @@ paths:
           $ref: '#/components/responses/ValidationError'
         '401':
           $ref: '#/components/responses/Unauthenticated'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
         '403':
           $ref: '#/components/responses/Forbidden'
         '404':
@@ -319,6 +361,8 @@ paths:
                 $ref: '#/components/schemas/PaletteColour'
         '401':
           $ref: '#/components/responses/Unauthenticated'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
         '403':
           $ref: '#/components/responses/Forbidden'
         '404':
@@ -342,6 +386,8 @@ paths:
           $ref: '#/components/responses/ValidationError'
         '401':
           $ref: '#/components/responses/Unauthenticated'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
         '403':
           $ref: '#/components/responses/Forbidden'
         '404':
@@ -358,6 +404,8 @@ paths:
                 $ref: '#/components/schemas/Deleted'
         '401':
           $ref: '#/components/responses/Unauthenticated'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
         '403':
           $ref: '#/components/responses/Forbidden'
         '404':
@@ -372,6 +420,14 @@ paths:
     get:
       tags: [palettes]
       summary: List avoid rules
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+        - name: sort
+          in: query
+          schema:
+            type: string
+            enum: [name, recent]
       responses:
         '200':
           description: Avoid rule list
@@ -381,6 +437,8 @@ paths:
                 $ref: '#/components/schemas/AvoidRuleList'
         '401':
           $ref: '#/components/responses/Unauthenticated'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
         '403':
           $ref: '#/components/responses/Forbidden'
         '404':
@@ -405,6 +463,8 @@ paths:
           $ref: '#/components/responses/ValidationError'
         '401':
           $ref: '#/components/responses/Unauthenticated'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
         '403':
           $ref: '#/components/responses/Forbidden'
         '404':
@@ -433,6 +493,8 @@ paths:
                 $ref: '#/components/schemas/AvoidRule'
         '401':
           $ref: '#/components/responses/Unauthenticated'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
         '403':
           $ref: '#/components/responses/Forbidden'
         '404':
@@ -456,6 +518,8 @@ paths:
           $ref: '#/components/responses/ValidationError'
         '401':
           $ref: '#/components/responses/Unauthenticated'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
         '403':
           $ref: '#/components/responses/Forbidden'
         '404':
@@ -472,6 +536,8 @@ paths:
                 $ref: '#/components/schemas/Deleted'
         '401':
           $ref: '#/components/responses/Unauthenticated'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
         '403':
           $ref: '#/components/responses/Forbidden'
         '404':
@@ -527,6 +593,8 @@ paths:
           $ref: '#/components/responses/ValidationError'
         '401':
           $ref: '#/components/responses/Unauthenticated'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
     post:
       tags: [items]
       summary: Create an item
@@ -547,6 +615,8 @@ paths:
           $ref: '#/components/responses/ValidationError'
         '401':
           $ref: '#/components/responses/Unauthenticated'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
   /api/items/{id}:
     parameters:
       - name: id
@@ -566,6 +636,8 @@ paths:
                 $ref: '#/components/schemas/Item'
         '401':
           $ref: '#/components/responses/Unauthenticated'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
         '403':
           $ref: '#/components/responses/Forbidden'
         '404':
@@ -589,6 +661,8 @@ paths:
           $ref: '#/components/responses/ValidationError'
         '401':
           $ref: '#/components/responses/Unauthenticated'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
         '403':
           $ref: '#/components/responses/Forbidden'
         '404':
@@ -605,6 +679,8 @@ paths:
                 $ref: '#/components/schemas/Deleted'
         '401':
           $ref: '#/components/responses/Unauthenticated'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
         '403':
           $ref: '#/components/responses/Forbidden'
         '404':
@@ -630,6 +706,8 @@ paths:
           $ref: '#/components/responses/ValidationError'
         '401':
           $ref: '#/components/responses/Unauthenticated'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
         '403':
           $ref: '#/components/responses/Forbidden'
         '404':
@@ -655,6 +733,8 @@ paths:
           $ref: '#/components/responses/ValidationError'
         '401':
           $ref: '#/components/responses/Unauthenticated'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
         '403':
           $ref: '#/components/responses/Forbidden'
         '404':
@@ -669,6 +749,9 @@ paths:
     get:
       tags: [items]
       summary: List item colours
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
       responses:
         '200':
           description: Item colour list
@@ -678,6 +761,8 @@ paths:
                 $ref: '#/components/schemas/ItemColourList'
         '401':
           $ref: '#/components/responses/Unauthenticated'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
         '403':
           $ref: '#/components/responses/Forbidden'
         '404':
@@ -709,6 +794,8 @@ paths:
           $ref: '#/components/responses/ValidationError'
         '401':
           $ref: '#/components/responses/Unauthenticated'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
         '403':
           $ref: '#/components/responses/Forbidden'
         '404':
@@ -734,6 +821,8 @@ paths:
           $ref: '#/components/responses/ValidationError'
         '401':
           $ref: '#/components/responses/Unauthenticated'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
         '403':
           $ref: '#/components/responses/Forbidden'
   /api/uploads/signed-url:
@@ -766,10 +855,44 @@ paths:
           $ref: '#/components/responses/ValidationError'
         '401':
           $ref: '#/components/responses/Unauthenticated'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
         '403':
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
+  /api/storage/{path}:
+    parameters:
+      - name: path
+        in: path
+        required: true
+        description: Storage path, URL encoded, for example items/<userId>/<itemId>.webp. Local dev server only; in production signed URLs point at Supabase Storage, not at this route.
+        schema:
+          type: string
+    get:
+      tags: [uploads]
+      summary: Local dev server only, serve a memory stored file with a valid signed token
+      parameters:
+        - name: token
+          in: query
+          required: true
+          description: Signed URL token. Missing or expired tokens are 401.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Stored file bytes
+          content:
+            image/webp:
+              schema:
+                type: string
+                format: binary
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
   /api/outfits:
     get:
       tags: [outfits]
@@ -794,6 +917,8 @@ paths:
                 $ref: '#/components/schemas/OutfitList'
         '401':
           $ref: '#/components/responses/Unauthenticated'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
     post:
       tags: [outfits]
       summary: Create an outfit
@@ -814,6 +939,8 @@ paths:
           $ref: '#/components/responses/ValidationError'
         '401':
           $ref: '#/components/responses/Unauthenticated'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
         '403':
           $ref: '#/components/responses/Forbidden'
   /api/outfits/{id}:
@@ -835,6 +962,8 @@ paths:
                 $ref: '#/components/schemas/Outfit'
         '401':
           $ref: '#/components/responses/Unauthenticated'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
         '403':
           $ref: '#/components/responses/Forbidden'
         '404':
@@ -858,6 +987,8 @@ paths:
           $ref: '#/components/responses/ValidationError'
         '401':
           $ref: '#/components/responses/Unauthenticated'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
         '403':
           $ref: '#/components/responses/Forbidden'
         '404':
@@ -874,6 +1005,8 @@ paths:
                 $ref: '#/components/schemas/Deleted'
         '401':
           $ref: '#/components/responses/Unauthenticated'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
         '403':
           $ref: '#/components/responses/Forbidden'
         '404':
@@ -888,6 +1021,9 @@ paths:
     get:
       tags: [outfits]
       summary: List outfit items
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
       responses:
         '200':
           description: Outfit item list
@@ -897,6 +1033,8 @@ paths:
                 $ref: '#/components/schemas/OutfitItemList'
         '401':
           $ref: '#/components/responses/Unauthenticated'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
         '403':
           $ref: '#/components/responses/Forbidden'
         '404':
@@ -921,6 +1059,8 @@ paths:
           $ref: '#/components/responses/ValidationError'
         '401':
           $ref: '#/components/responses/Unauthenticated'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
         '403':
           $ref: '#/components/responses/Forbidden'
         '404':
@@ -942,13 +1082,15 @@ paths:
       summary: Remove an item from an outfit
       responses:
         '200':
-          description: Deleted marker
+          description: Deleted marker with outfitId and itemId
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Deleted'
+                $ref: '#/components/schemas/OutfitItemDeleted'
         '401':
           $ref: '#/components/responses/Unauthenticated'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
         '403':
           $ref: '#/components/responses/Forbidden'
         '404':
@@ -977,6 +1119,8 @@ paths:
                 $ref: '#/components/schemas/WearLogList'
         '401':
           $ref: '#/components/responses/Unauthenticated'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
     post:
       tags: [wear-logs]
       summary: Log an outfit as worn, increments wear counts
@@ -997,6 +1141,8 @@ paths:
           $ref: '#/components/responses/ValidationError'
         '401':
           $ref: '#/components/responses/Unauthenticated'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
         '403':
           $ref: '#/components/responses/Forbidden'
         '404':
@@ -1020,6 +1166,8 @@ paths:
                 $ref: '#/components/schemas/WearLog'
         '401':
           $ref: '#/components/responses/Unauthenticated'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
         '403':
           $ref: '#/components/responses/Forbidden'
         '404':
@@ -1036,6 +1184,8 @@ paths:
                 $ref: '#/components/schemas/Deleted'
         '401':
           $ref: '#/components/responses/Unauthenticated'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
         '403':
           $ref: '#/components/responses/Forbidden'
         '404':
@@ -1060,6 +1210,8 @@ paths:
                 $ref: '#/components/schemas/AdviceRuleList'
         '401':
           $ref: '#/components/responses/Unauthenticated'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
     post:
       tags: [advice-rules]
       summary: Create an advice rule
@@ -1080,6 +1232,8 @@ paths:
           $ref: '#/components/responses/ValidationError'
         '401':
           $ref: '#/components/responses/Unauthenticated'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
   /api/advice-rules/seed:
     post:
       tags: [advice-rules]
@@ -1099,6 +1253,8 @@ paths:
                 $ref: '#/components/schemas/AdviceRuleSeedResult'
         '401':
           $ref: '#/components/responses/Unauthenticated'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
   /api/advice-rules/{id}:
     parameters:
       - name: id
@@ -1118,6 +1274,8 @@ paths:
                 $ref: '#/components/schemas/AdviceRule'
         '401':
           $ref: '#/components/responses/Unauthenticated'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
         '403':
           $ref: '#/components/responses/Forbidden'
         '404':
@@ -1141,6 +1299,8 @@ paths:
           $ref: '#/components/responses/ValidationError'
         '401':
           $ref: '#/components/responses/Unauthenticated'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
         '403':
           $ref: '#/components/responses/Forbidden'
         '404':
@@ -1157,6 +1317,8 @@ paths:
                 $ref: '#/components/schemas/Deleted'
         '401':
           $ref: '#/components/responses/Unauthenticated'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
         '403':
           $ref: '#/components/responses/Forbidden'
         '404':
@@ -1167,7 +1329,13 @@ paths:
       summary: Export all user data as a ZIP file
       responses:
         '200':
-          description: ZIP file
+          description: ZIP file. The Content-Disposition attachment filename follows the pattern closet-export-<date>.zip.
+          headers:
+            Content-Disposition:
+              description: Attachment filename of the form closet-export-<date>.zip
+              schema:
+                type: string
+                example: attachment; filename="closet-export-2026-10-30.zip"
           content:
             application/zip:
               schema:
@@ -1185,17 +1353,16 @@ components:
     Page:
       name: page
       in: query
+      description: Page number, starting at 1. Out of range values are clamped, not rejected. Non numeric values are 400 VALIDATION_ERROR.
       schema:
         type: integer
-        minimum: 1
         default: 1
     PageSize:
       name: pageSize
       in: query
+      description: Page size, 1 to 100, default 20. Out of range values are clamped, not rejected. Non numeric values are 400 VALIDATION_ERROR.
       schema:
         type: integer
-        minimum: 1
-        maximum: 100
         default: 20
   responses:
     ValidationError:
@@ -1218,6 +1385,12 @@ components:
             $ref: '#/components/schemas/Error'
     NotFound:
       description: Missing resource
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    MethodNotAllowed:
+      description: The path exists but the method is not listed in the contract
       content:
         application/json:
           schema:
@@ -1249,6 +1422,15 @@ components:
           type: string
         softDeleted:
           type: boolean
+    OutfitItemDeleted:
+      type: object
+      properties:
+        deleted:
+          type: boolean
+        outfitId:
+          type: string
+        itemId:
+          type: string
     Pagination:
       type: object
       properties:
@@ -1399,13 +1581,38 @@ components:
           nullable: true
         isActive:
           type: boolean
+    PaletteListItem:
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        name:
+          type: string
+        sourceFileName:
+          type: string
+          nullable: true
+        uploadedAt:
+          type: string
+          format: date-time
+        isActive:
+          type: boolean
+        version:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
     PaletteList:
       type: object
       properties:
         data:
           type: array
           items:
-            $ref: '#/components/schemas/Palette'
+            $ref: '#/components/schemas/PaletteListItem'
         pagination:
           $ref: '#/components/schemas/Pagination'
     RerateResult:
@@ -1471,6 +1678,8 @@ components:
           pattern: '^#[0-9A-Fa-f]{6}$'
         labL:
           type: number
+          minimum: 0
+          maximum: 100
         labA:
           type: number
         labB:
@@ -1928,13 +2137,96 @@ components:
         manualScoreNote:
           type: string
           nullable: true
+    ItemListItem:
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        name:
+          type: string
+        category:
+          type: string
+        season:
+          $ref: '#/components/schemas/Season'
+        fitTags:
+          type: array
+          items:
+            type: string
+        status:
+          $ref: '#/components/schemas/ItemStatus'
+        price:
+          type: number
+          nullable: true
+        location:
+          type: string
+          nullable: true
+        photoPath:
+          type: string
+          nullable: true
+        thumbnailPath:
+          type: string
+          nullable: true
+        photoSignedUrl:
+          type: string
+          nullable: true
+        thumbnailSignedUrl:
+          type: string
+          nullable: true
+        primaryColorHex:
+          type: string
+          nullable: true
+        paletteScore:
+          type: number
+          nullable: true
+        paletteVerdict:
+          $ref: '#/components/schemas/Verdict'
+          nullable: true
+        nearestPaletteColorId:
+          type: string
+          nullable: true
+        nearestPaletteColorName:
+          type: string
+          nullable: true
+        ratingReason:
+          type: string
+          nullable: true
+        autoScore:
+          type: number
+          nullable: true
+        manualScore:
+          type: number
+          nullable: true
+        manualScoreNote:
+          type: string
+          nullable: true
+        wearCount:
+          type: integer
+        lastWornAt:
+          type: string
+          format: date-time
+          nullable: true
+        costPerWear:
+          type: number
+          nullable: true
+        deletedAt:
+          type: string
+          format: date-time
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
     ItemList:
       type: object
       properties:
         data:
           type: array
           items:
-            $ref: '#/components/schemas/Item'
+            $ref: '#/components/schemas/ItemListItem'
         pagination:
           $ref: '#/components/schemas/Pagination'
     UploadCreate:
@@ -1956,11 +2248,16 @@ components:
         width:
           type: integer
           minimum: 1
+          maximum: 1200
+          description: Image width maximum is 1200. Thumbnail width maximum is 400. A wider value is 400, because the browser must compress before upload.
         height:
           type: integer
           minimum: 1
+          maximum: 4000
+          description: Height maximum is 4000 for both image and thumbnail.
         dataBase64:
           type: string
+          description: Base64 of the compressed WebP bytes. The maximum decoded size accepted is 5MB; larger uploads are 400.
     UploadResult:
       type: object
       properties:
@@ -2151,13 +2448,54 @@ components:
             type: string
         saved:
           type: boolean
+    OutfitListItem:
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        occasion:
+          $ref: '#/components/schemas/Occasion'
+        season:
+          $ref: '#/components/schemas/Season'
+        vibe:
+          $ref: '#/components/schemas/Vibe'
+          nullable: true
+        paletteScore:
+          type: number
+          nullable: true
+        fitScore:
+          type: number
+          nullable: true
+        contrastScore:
+          type: number
+          nullable: true
+        rotationScore:
+          type: number
+          nullable: true
+        totalScore:
+          type: number
+          nullable: true
+        explanation:
+          type: array
+          items:
+            type: string
+        saved:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
     OutfitList:
       type: object
       properties:
         data:
           type: array
           items:
-            $ref: '#/components/schemas/Outfit'
+            $ref: '#/components/schemas/OutfitListItem'
         pagination:
           $ref: '#/components/schemas/Pagination'
     WearLogCreate:
