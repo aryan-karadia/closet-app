@@ -1,0 +1,6 @@
+@import "tailwindcss";
+
+/* Closet app base styles (refs ISSUE-20). Mobile first, portrait, one handed use. */
+:root { color-scheme: light; }
+body { background: #f4f6f8; color: #111827; font-family: ui-sans-system, system-ui, sans-serif; }
+a { color: #1d4ed8; }
