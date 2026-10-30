@@ -8,7 +8,7 @@ import { useRequireAuth } from '../../../lib/auth';
 import { api } from '../../../lib/api-client';
 import { compressImage, blobToBase64 } from '../../../lib/image-compress';
 import BackgroundRemoval, { type PhotoResult } from '../../../components/BackgroundRemoval';
-import { Button, Card, ErrorText, Field, Input, Select, SecondaryButton } from '../../../components/ui';
+import { Button, Card, ErrorText, Field, Input, Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '../../../components/ui';
 import { CATEGORIES, SEASONS } from '../../../lib/types';
 
 export default function NewItemPage() {
@@ -56,15 +56,24 @@ export default function NewItemPage() {
         <h1 className="text-xl font-bold">Add item</h1>
         {!file && <div className="mt-3"><Field label="Photo (one item per photo)"><Input type="file" accept="image/*" onChange={(e) => { const f = e.target.files?.[0]; if (f) setFile(f); }} /></Field></div>}
         {file && !photo && <BackgroundRemoval file={file} onConfirm={(result) => setPhoto(result)} onRetake={() => setFile(null)} />}
-        {photo && <p className="mt-2 text-sm">{photo.manual ? 'Manual save: no auto score until a better photo is provided.' : 'Cutout confirmed with ' + photo.dominantColours.length + ' dominant colours.'} <SecondaryButton onClick={() => { setPhoto(null); setFile(null); }}>Retake</SecondaryButton></p>}
+        {photo && <p className="mt-2 text-sm">{photo.manual ? 'Manual save: no auto score until a better photo is provided.' : 'Cutout confirmed with ' + photo.dominantColours.length + ' dominant colours.'} <Button variant="outline" onClick={() => { setPhoto(null); setFile(null); }}>Retake</Button></p>}
       </Card>
       <Card>
         <div className="flex flex-col gap-3">
           <Field label="Name"><Input value={name} onChange={(e) => setName(e.target.value)} /></Field>
-          <Field label="Category"><Select value={category} onChange={(e) => setCategory(e.target.value)}>{CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}</Select></Field>
-          <Field label="Season"><Select value={season} onChange={(e) => setSeason(e.target.value)}>{SEASONS.map((s) => <option key={s} value={s}>{s}</option>)}</Select></Field>
+          <Field label="Category"><Select value={category} onValueChange={(v) => setCategory(v ?? '')}>
+          <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
+          <SelectContent>{CATEGORIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
+        </Select></Field>
+          <Field label="Season"><Select value={season} onValueChange={(v) => setSeason(v ?? '')}>
+          <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
+          <SelectContent>{SEASONS.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
+        </Select></Field>
           <Field label="Fit tags (comma separated)"><Input value={fitTags} onChange={(e) => setFitTags(e.target.value)} placeholder="relaxed body, structured shoulder" /></Field>
-          <Field label="Status"><Select value={status} onChange={(e) => setStatus(e.target.value)}><option value="in rotation">in rotation</option><option value="stored">stored</option><option value="archived">archived</option></Select></Field>
+          <Field label="Status"><Select value={status} onValueChange={(v) => setStatus(v ?? '')}>
+          <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
+          <SelectContent><SelectItem value="in rotation">in rotation</SelectItem><SelectItem value="stored">stored</SelectItem><SelectItem value="archived">archived</SelectItem></SelectContent>
+        </Select></Field>
           <Field label="Price (optional)"><Input type="number" min="0" step="0.01" value={price} onChange={(e) => setPrice(e.target.value)} /></Field>
           {progress && <p className="text-sm">{progress}</p>}
           <ErrorText message={error} />

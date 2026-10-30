@@ -9,7 +9,7 @@ import Link from 'next/link';
 import { useRequireAuth } from '../../lib/auth';
 import { api } from '../../lib/api-client';
 import type { Palette } from '../../lib/types';
-import { Button, Card, ErrorText, Input } from '../../components/ui';
+import { Button, Card, ErrorText, Input, Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '../../components/ui';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const ingester = require('../../lib/palette-ingester.js');
 
@@ -73,14 +73,21 @@ export default function PalettePage() {
       <Card>
         <h2 className="font-bold">Saved palettes</h2>
         {palettes.length === 0 && <p className="text-sm text-slate-600">No palettes saved yet.</p>}
-        <ul className="mt-2 flex flex-col gap-2 text-sm">
-          {palettes.map((p) => (
-            <li key={p.id} className="flex items-center gap-2">
-              <span>{p.name} (v{p.version}){p.isActive ? ' [active]' : ''}</span>
-              {!p.isActive && <Button onClick={async () => { await api.activatePalette(p.id); const r = await api.listPalettes(); setPalettes(r.data); }}>Activate</Button>}
-            </li>
-          ))}
-        </ul>
+        {palettes.length > 0 && (
+          <Table>
+            <TableHeader><TableRow><TableHead>Name</TableHead><TableHead>Version</TableHead><TableHead>Status</TableHead><TableHead></TableHead></TableRow></TableHeader>
+            <TableBody>
+              {palettes.map((p) => (
+                <TableRow key={p.id}>
+                  <TableCell>{p.name}</TableCell>
+                  <TableCell>v{p.version}</TableCell>
+                  <TableCell>{p.isActive ? 'Active' : ''}</TableCell>
+                  <TableCell>{!p.isActive && <Button onClick={async () => { await api.activatePalette(p.id); const r = await api.listPalettes(); setPalettes(r.data); }}>Activate</Button>}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
       </Card>
     </div>
   );

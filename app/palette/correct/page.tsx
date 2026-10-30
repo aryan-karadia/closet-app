@@ -8,7 +8,7 @@ import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useRequireAuth } from '../../../lib/auth';
 import { api } from '../../../lib/api-client';
-import { Button, Card, ErrorText, Field, Input, Select, SecondaryButton } from '../../../components/ui';
+import { Button, Card, Checkbox, ErrorText, Field, Input, Label, Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '../../../components/ui';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const ingester = require('../../../lib/palette-ingester.js');
 
@@ -116,10 +116,10 @@ function CorrectionInner() {
         <p className="mt-1 text-sm text-slate-600">Nothing here is final until you approve and save. Beauty colours are flagged and can be removed in one tap, with undo.</p>
         <div className="mt-3 flex flex-col gap-3">
           <Field label="Palette name"><Input value={paletteName} onChange={(e) => setPaletteName(e.target.value)} /></Field>
-          <label className="text-sm"><input type="checkbox" checked={activate} onChange={(e) => setActivate(e.target.checked)} /> Activate this palette and re-rate items on save</label>
+          <div className="flex items-center gap-2"><Checkbox checked={activate} onCheckedChange={(v) => setActivate(v === true)} /><Label>Activate this palette and re-rate items on save</Label></div>
           <div className="flex gap-2">
-            <SecondaryButton onClick={removeBeauty}>Remove beauty colours</SecondaryButton>
-            {removed.length > 0 && <SecondaryButton onClick={undoRemove}>Undo remove ({removed.length})</SecondaryButton>}
+            <Button variant="outline" onClick={removeBeauty}>Remove beauty colours</Button>
+            {removed.length > 0 && <Button variant="outline" onClick={undoRemove}>Undo remove ({removed.length})</Button>}
             <Button onClick={save}>Approve and save</Button>
           </div>
           <p className="text-sm">Summary: {summary.core} core, {summary.neutral} neutral, {summary.avoid} avoid, {summary.total} total.</p>
@@ -133,7 +133,10 @@ function CorrectionInner() {
         <div className="mt-2 flex flex-wrap gap-2">
           <Field label="Name"><Input value={newName} onChange={(e) => setNewName(e.target.value)} /></Field>
           <Field label="Hex"><Input type="color" value={newHex} onChange={(e) => setNewHex(e.target.value)} /></Field>
-          <Field label="Role"><Select value={newRole} onChange={(e) => setNewRole(e.target.value as 'core' | 'neutral' | 'avoid')}><option value="core">core</option><option value="neutral">neutral</option><option value="avoid">avoid</option></Select></Field>
+          <Field label="Role"><Select value={newRole} onValueChange={(v) => setNewRole((v ?? '') as 'core' | 'neutral' | 'avoid')}>
+          <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
+          <SelectContent><SelectItem value="core">core</SelectItem><SelectItem value="neutral">neutral</SelectItem><SelectItem value="avoid">avoid</SelectItem></SelectContent>
+        </Select></Field>
           <Field label="Family"><Input value={newFamily} onChange={(e) => setNewFamily(e.target.value)} /></Field>
           <Button className="mt-5" onClick={addColour}>Add colour</Button>
         </div>
@@ -146,11 +149,14 @@ function CorrectionInner() {
             <div className="flex-1">
               <Field label="Name"><Input value={c.name} onChange={(e) => update(c.id, { name: e.target.value })} /></Field>
             </div>
-            <SecondaryButton onClick={() => setColours((list) => list.filter((x) => x.id !== c.id))}>Delete</SecondaryButton>
+            <Button variant="outline" onClick={() => setColours((list) => list.filter((x) => x.id !== c.id))}>Delete</Button>
           </div>
           <div className="mt-2 flex flex-wrap gap-2">
             <Field label="Hex"><Input value={c.hex || ''} placeholder="#RRGGBB" onChange={(e) => update(c.id, { hex: e.target.value || null })} /></Field>
-            <Field label="Role"><Select value={c.role} onChange={(e) => update(c.id, { role: e.target.value as 'core' | 'neutral' | 'avoid' })}><option value="core">core</option><option value="neutral">neutral</option><option value="avoid">avoid</option></Select></Field>
+            <Field label="Role"><Select value={c.role} onValueChange={(v) => update(c.id, { role: (v ?? c.role) as 'core' | 'neutral' | 'avoid' })}>
+          <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
+          <SelectContent><SelectItem value="core">core</SelectItem><SelectItem value="neutral">neutral</SelectItem><SelectItem value="avoid">avoid</SelectItem></SelectContent>
+        </Select></Field>
             <span className="mt-6 text-sm text-slate-600">Source page: {c.sourcePage || 'manual'}{c.beauty ? ' [beauty]' : ''}{c.isAvoidRule ? ' [avoid rule, no hex needed]' : ''}</span>
           </div>
         </Card>

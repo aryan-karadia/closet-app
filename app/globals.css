@@ -13,6 +13,10 @@
   clothing palette, item ratings, or the outfit builder rules in the spec.
   Body text stays near black for readability, because Moss on Cream alone
   is not strong enough for small text.
+  The shadcn CSS variables in :root below are mapped to the same palette:
+  background Cream, primary Moss, secondary and border Sage, accent and
+  muted Blush, so shadcn components use the ColorHunt theme, not the
+  preset mist theme, in light mode. Dark mode keeps the preset values.
 */
 @theme {
   --color-blush: #f6e2e9;
@@ -21,7 +25,7 @@
   --color-moss: #84a282;
 }
 
-:root { color-scheme: light; --background: oklch(1 0 0); --foreground: oklch(0.148 0.004 228.8); --card: oklch(1 0 0); --card-foreground: oklch(0.148 0.004 228.8); --popover: oklch(1 0 0); --popover-foreground: oklch(0.148 0.004 228.8); --primary: oklch(0.508 0.118 165.612); --primary-foreground: oklch(0.979 0.021 166.113); --secondary: oklch(0.967 0.001 286.375); --secondary-foreground: oklch(0.21 0.006 285.885); --muted: oklch(0.963 0.002 197.1); --muted-foreground: oklch(0.56 0.021 213.5); --accent: oklch(0.963 0.002 197.1); --accent-foreground: oklch(0.218 0.008 223.9); --destructive: oklch(0.577 0.245 27.325); --border: oklch(0.925 0.005 214.3); --input: oklch(0.925 0.005 214.3); --ring: oklch(0.723 0.014 214.4); --chart-1: oklch(0.872 0.007 219.6); --chart-2: oklch(0.56 0.021 213.5); --chart-3: oklch(0.45 0.017 213.2); --chart-4: oklch(0.378 0.015 216); --chart-5: oklch(0.275 0.011 216.9); --radius: 0.45rem; --sidebar: oklch(0.987 0.002 197.1); --sidebar-foreground: oklch(0.148 0.004 228.8); --sidebar-primary: oklch(0.596 0.145 163.225); --sidebar-primary-foreground: oklch(0.979 0.021 166.113); --sidebar-accent: oklch(0.963 0.002 197.1); --sidebar-accent-foreground: oklch(0.218 0.008 223.9); --sidebar-border: oklch(0.925 0.005 214.3); --sidebar-ring: oklch(0.723 0.014 214.4); }
+:root { color-scheme: light; --background: #fefaf3; --foreground: #111827; --card: #ffffff; --card-foreground: #111827; --popover: #ffffff; --popover-foreground: #111827; --primary: #84a282; --primary-foreground: #ffffff; --secondary: #b8cfb3; --secondary-foreground: #111827; --muted: #f6e2e9; --muted-foreground: #4b5563; --accent: #f6e2e9; --accent-foreground: #111827; --destructive: oklch(0.577 0.245 27.325); --border: #b8cfb3; --input: #b8cfb3; --ring: #84a282; --chart-1: oklch(0.872 0.007 219.6); --chart-2: oklch(0.56 0.021 213.5); --chart-3: oklch(0.45 0.017 213.2); --chart-4: oklch(0.378 0.015 216); --chart-5: oklch(0.275 0.011 216.9); --radius: 0.45rem; --sidebar: #fefaf3; --sidebar-foreground: #111827; --sidebar-primary: #84a282; --sidebar-primary-foreground: #ffffff; --sidebar-accent: #f6e2e9; --sidebar-accent-foreground: #111827; --sidebar-border: #b8cfb3; --sidebar-ring: #84a282; }
 body { background: #fefaf3; color: #111827; font-family: ui-sans-system, system-ui, sans-serif; }
 a { color: #84a282; text-decoration: underline; }
 a:hover { opacity: 0.85; }

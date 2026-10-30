@@ -9,7 +9,7 @@ import Link from 'next/link';
 import { useRequireAuth } from '../../lib/auth';
 import { api } from '../../lib/api-client';
 import type { Outfit } from '../../lib/types';
-import { Button, Card, ErrorText, SecondaryButton } from '../../components/ui';
+import { Button, Card, ErrorText } from '../../components/ui';
 import ScoreBadge from '../../components/ScoreBadge';
 
 export default function SavedOutfitsPage() {
@@ -56,7 +56,7 @@ export default function SavedOutfitsPage() {
           <p className="mt-1 text-sm text-slate-600">Your saved interview outfit, saved {interview.createdAt ? new Date(interview.createdAt).toLocaleDateString() : ''}.</p>
           <div className="mt-2 flex gap-2">
             <Button onClick={() => logWorn(interview)}>Log worn today</Button>
-            <Link href={'/outfits/' + interview.id}><SecondaryButton>View outfit</SecondaryButton></Link>
+            <Link href={'/outfits/' + interview.id}><Button variant="outline">View outfit</Button></Link>
           </div>
         </Card>
       )}
@@ -70,7 +70,7 @@ export default function SavedOutfitsPage() {
           </div>
           <div className="mt-2 flex gap-2">
             <Button onClick={() => logWorn(outfit)}>Log worn</Button>
-            <SecondaryButton onClick={async () => { if (confirm('Delete this saved outfit?')) { await api.deleteOutfit(outfit.id); await load(); } }}>Delete</SecondaryButton>
+            <Button variant="outline" onClick={async () => { if (confirm('Delete this saved outfit?')) { await api.deleteOutfit(outfit.id); await load(); } }}>Delete</Button>
           </div>
         </Card>
       ))}

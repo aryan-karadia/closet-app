@@ -8,7 +8,7 @@ import { useParams } from 'next/navigation';
 import { useRequireAuth } from '../../../lib/auth';
 import { api } from '../../../lib/api-client';
 import type { Item, Outfit } from '../../../lib/types';
-import { Button, Card, ErrorText, SecondaryButton } from '../../../components/ui';
+import { Button, Card, ErrorText } from '../../../components/ui';
 import ScoreBadge from '../../../components/ScoreBadge';
 
 export default function OutfitDetailPage() {
@@ -55,7 +55,7 @@ export default function OutfitDetailPage() {
         {status && <p className="mt-2 text-sm">{status}</p>}
         <div className="mt-3 flex gap-2">
           <Button onClick={async () => { try { const itemIds = (outfit.items || []).map((x) => x.itemId); await api.createWearLog({ outfitId: outfit.id, itemIds, occasion: outfit.occasion }); setStatus('Logged as worn today.'); } catch (e) { setError(e instanceof Error ? e.message : 'Log worn failed.'); } }}>Log worn</Button>
-          <SecondaryButton onClick={async () => { if (confirm('Delete this saved outfit?')) { await api.deleteOutfit(outfit.id); window.location.href = '/outfits'; } }}>Delete</SecondaryButton>
+          <Button variant="outline" onClick={async () => { if (confirm('Delete this saved outfit?')) { await api.deleteOutfit(outfit.id); window.location.href = '/outfits'; } }}>Delete</Button>
         </div>
       </Card>
     </div>
