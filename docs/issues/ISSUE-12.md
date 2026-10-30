@@ -6,6 +6,9 @@
 - Dependencies: ISSUE-06, ISSUE-11
 - Spec reference: See acceptance criteria and the build spec.
 
+
+Fixed stack for Agent A: Tailwind CSS, shadcn/ui, React, Next.js with TypeScript. No Vue, no other UI framework. See docs/stack-decision-agent-a.md, recorded 2026-10-30.
+
 ## Acceptance criteria
 
 Grid with photo, category, score badge, verdict, season, and fit tags. Filters by category, verdict, season, fit tag, status, colour family, and search by name or tag. Sort by palette score, least worn, recently added, or name. Spec section 7.

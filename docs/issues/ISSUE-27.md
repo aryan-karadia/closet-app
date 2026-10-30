@@ -6,6 +6,9 @@
 - Dependencies: ISSUE-12, ISSUE-19
 - Spec reference: See acceptance criteria and the build spec.
 
+
+Fixed stack for Agent A: Tailwind CSS, shadcn/ui, React, Next.js with TypeScript. No Vue, no other UI framework. See docs/stack-decision-agent-a.md, recorded 2026-10-30.
+
 ## Acceptance criteria
 
 PWA manifest, installable on Android, saved outfits and wardrobe grid viewable offline after first load. If offline generation is not supported, the UI states the limitation. No Play Store publishing in MVP. Spec sections 9, 10, and 11.4.

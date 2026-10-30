@@ -6,6 +6,9 @@
 - Dependencies: ISSUE-01, ISSUE-03
 - Spec reference: See acceptance criteria and the build spec.
 
+
+Fixed stack for Agent A: Tailwind CSS, shadcn/ui, React, Next.js with TypeScript. No Vue, no other UI framework. See docs/stack-decision-agent-a.md, recorded 2026-10-30.
+
 ## Acceptance criteria
 
 User can rename, change role, change hex, delete, and add colours, use Remove beauty colours, and see a summary with counts and a warning if zero neutrals or zero avoids. Nothing is final until the user approves and saves. Spec section 4.3 step 4.

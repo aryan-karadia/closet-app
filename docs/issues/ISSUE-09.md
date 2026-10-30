@@ -6,6 +6,9 @@
 - Dependencies: ISSUE-08 contract frozen
 - Spec reference: See acceptance criteria and the build spec.
 
+
+Fixed stack for Agent A: Tailwind CSS, shadcn/ui, React, Next.js with TypeScript. No Vue, no other UI framework. See docs/stack-decision-agent-a.md, recorded 2026-10-30.
+
 ## Acceptance criteria
 
 User sees a cutout and can confirm or retake. If background removal fails, the user can save manually with score marked manual, not auto rated. Colour clustering uses garment pixels only, k equals 4 or equivalent, small clusters under 5 percent discarded unless a clear accent. Spec sections 5.1 and 5.2.

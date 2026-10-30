@@ -6,6 +6,9 @@
 - Dependencies: ISSUE-20
 - Spec reference: See acceptance criteria and the build spec.
 
+
+Fixed stack for Agent A: Tailwind CSS, shadcn/ui, React, Next.js with TypeScript. No Vue, no other UI framework. See docs/stack-decision-agent-a.md, recorded 2026-10-30.
+
 ## Acceptance criteria
 
 Settings screen with profile (build, fit, sizes, style direction), palette management link, data export link, delete account confirmation, and storage usage warning at 80 percent. Spec sections 10 and 16.7.

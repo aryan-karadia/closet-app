@@ -6,6 +6,9 @@
 - Dependencies: ISSUE-21 contract for session guard
 - Spec reference: See acceptance criteria and the build spec.
 
+
+Fixed stack for Agent A: Tailwind CSS, shadcn/ui, React, Next.js with TypeScript. No Vue, no other UI framework. See docs/stack-decision-agent-a.md, recorded 2026-10-30.
+
 ## Acceptance criteria
 
 Google sign in only, kept simple, session handling, protected routes, unauthenticated users redirected to sign in. No other auth method in MVP. Spec sections 9 and 16.

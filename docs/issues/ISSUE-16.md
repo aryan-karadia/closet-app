@@ -6,6 +6,9 @@
 - Dependencies: ISSUE-10, ISSUE-15, ISSUE-29 tests first
 - Spec reference: See acceptance criteria and the build spec.
 
+
+Fixed stack for Agent A: Tailwind CSS, shadcn/ui, React, Next.js with TypeScript. No Vue, no other UI framework. See docs/stack-decision-agent-a.md, recorded 2026-10-30.
+
 ## Acceptance criteria
 
 Pure TypeScript engine in lib/outfit-engine/, run in a Web Worker, using precomputed item data from the API. Pruned beam search per spec section 16.6: filter, anchor on top 10 bottoms preferring neutrals, build up, score, keep top 20, enforce diversity. Never brute force all combinations. No LLM in the outfit path.

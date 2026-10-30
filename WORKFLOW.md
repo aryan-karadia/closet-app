@@ -51,7 +51,7 @@ Do not silently change a contract or a test to make code pass. A contract change
 
 ## Agent ownership
 
-- Agent A: frontend only. Next.js UI, Google Auth via Supabase Auth, protected routes, and the browser rule engine in `lib/outfit-engine/`. Consumes only API contracts made by Agent B. Must not access Supabase Postgres or Storage directly for data, except for the auth session itself. Must not invent endpoints. Missing or mismatched endpoints go to Agent D, who routes them to Agent B.
+- Agent A: frontend only. Next.js with React and TypeScript, Tailwind CSS, shadcn/ui UI, Google Auth via Supabase Auth, protected routes, and the browser rule engine in `lib/outfit-engine/`. Agent A stack is fixed to Tailwind CSS, shadcn/ui, React, Next.js with TypeScript. No Vue, no other UI framework. Consumes only API contracts made by Agent B. Must not access Supabase Postgres or Storage directly for data, except for the auth session itself. Must not invent endpoints. Missing or mismatched endpoints go to Agent D, who routes them to Agent B.
 - Agent B: backend only. API contracts first, then endpoints, Supabase Postgres tables and RLS, Supabase Storage via a StorageProvider abstraction, signed URLs, validation, and CRUD. Must not build frontend UI.
 - Agent C: QA first, before feature code. Writes unit and integration tests based on the spec, not on code. Tests are the acceptance gate for Agent A and Agent B.
 - Agent D: overseer, coordinator, and only merger to main. Communicates between agents, handles mismatches, and records decisions.

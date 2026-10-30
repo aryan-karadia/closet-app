@@ -22,7 +22,12 @@ The build spec at `../your_files/closet-app-mvp-build-spec.md` in the parent wor
 
 ## Stack
 
-- Next.js, TypeScript, Tailwind CSS, PWA
+### Agent A stack decision, recorded 2026-10-30
+
+Agent A's tech stack is fixed as Tailwind CSS, shadcn/ui, React, Next.js with TypeScript. No Vue, no other UI framework. This matches spec Section 16.2, with React now made explicit. This decision does not change Agent B, Agent C, or Agent D roles, and does not change the workflow, branch, or merge rules. See `docs/stack-decision-agent-a.md`.
+
+
+- Next.js with React and TypeScript, Tailwind CSS, shadcn/ui, PWA. Agent A stack is fixed to exactly this. No Vue, no other UI framework.
 - Supabase Auth (Google Auth), Supabase Postgres, Supabase Storage
 - Browser: pdf.js for palette PDFs, background removal and colour clustering in a worker, Delta E rating in CIELAB
 - Tests: spec based unit and integration tests under `tests/`, see `tests/TEST-PLAN.md` once Agent C creates it

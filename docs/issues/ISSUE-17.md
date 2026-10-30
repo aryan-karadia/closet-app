@@ -6,6 +6,9 @@
 - Dependencies: ISSUE-13, ISSUE-14, ISSUE-16
 - Spec reference: See acceptance criteria and the build spec.
 
+
+Fixed stack for Agent A: Tailwind CSS, shadcn/ui, React, Next.js with TypeScript. No Vue, no other UI framework. See docs/stack-decision-agent-a.md, recorded 2026-10-30.
+
 ## Acceptance criteria
 
 Home screen after login with occasion, season, vibe selectors, Build button, 3 outfits with photos, scores, and why it works, actions Save, Log worn, Shuffle slot, and Dislike. Disliked combinations are not suggested again for 30 days. Empty slots are shown as missing, never invented. Spec sections 6.1, 6.2, 6.3, and 10.
