@@ -11,7 +11,7 @@ import { useRequireAuth } from '../../../lib/auth';
 import { api } from '../../../lib/api-client';
 import type { Item, Outfit } from '../../../lib/types';
 import ScoreBadge from '../../../components/ScoreBadge';
-import { Button, Card, ErrorText, SecondaryButton } from '../../../components/ui';
+import { Button, Card, ErrorText, Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '../../../components/ui';
 
 export default function ItemDetailPage() {
   const { user, loading } = useRequireAuth();
@@ -47,15 +47,27 @@ export default function ItemDetailPage() {
         <div className="mt-3">
           <p className="font-medium text-sm">Dominant colours</p>
           {(item.colours || []).length === 0 && <p className="text-sm text-slate-600">No dominant colours stored.</p>}
-          <ul className="mt-1 flex flex-wrap gap-2 text-sm">
-            {(item.colours || []).map((c, i) => <li key={i} className="flex items-center gap-1"><span className="inline-block h-5 w-5 rounded border" style={{ background: c.hex }} />{c.hex} {c.percentage}%{c.isPrimary ? ' (primary)' : ''}</li>)}
-          </ul>
+          {(item.colours || []).length > 0 && (
+            <Table>
+              <TableHeader><TableRow><TableHead>Swatch</TableHead><TableHead>Hex</TableHead><TableHead>Share</TableHead><TableHead>Primary</TableHead></TableRow></TableHeader>
+              <TableBody>
+                {(item.colours || []).map((c, i) => (
+                  <TableRow key={i}>
+                    <TableCell><span className="inline-block h-5 w-5 rounded border" style={{ background: c.hex }} /></TableCell>
+                    <TableCell>{c.hex}</TableCell>
+                    <TableCell>{c.percentage}%</TableCell>
+                    <TableCell>{c.isPrimary ? 'Yes' : ''}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
         </div>
         <div className="mt-4 flex flex-wrap gap-2">
           <Link href={'/items/' + item.id + '/edit'}><Button>Edit</Button></Link>
-          <SecondaryButton onClick={async () => { if (confirm('Delete this item? It can be restored within 30 days.')) { await api.deleteItem(item.id); window.location.href = '/wardrobe'; } }}>Delete (soft delete)</SecondaryButton>
-          <SecondaryButton onClick={async () => { await api.restoreItem(item.id); window.location.reload(); }}>Restore within 30 days</SecondaryButton>
-          <SecondaryButton onClick={async () => { if (confirm('Permanently delete this item? This cannot be undone.')) { await api.permanentDeleteItem(item.id); window.location.href = '/wardrobe'; } }}>Permanent delete</SecondaryButton>
+          <Button variant="outline" onClick={async () => { if (confirm('Delete this item? It can be restored within 30 days.')) { await api.deleteItem(item.id); window.location.href = '/wardrobe'; } }}>Delete (soft delete)</Button>
+          <Button variant="outline" onClick={async () => { await api.restoreItem(item.id); window.location.reload(); }}>Restore within 30 days</Button>
+          <Button variant="outline" onClick={async () => { if (confirm('Permanently delete this item? This cannot be undone.')) { await api.permanentDeleteItem(item.id); window.location.href = '/wardrobe'; } }}>Permanent delete</Button>
         </div>
       </Card>
       <Card>

@@ -5,7 +5,7 @@
 // No em dashes are used in this file.
 'use client';
 import { useRef, useState } from 'react';
-import { Button, Card, ErrorText, SecondaryButton } from './ui';
+import { Button, Card, ErrorText } from './ui';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const clusterLib = require('../lib/colour-cluster.js');
 
@@ -89,7 +89,7 @@ export default function BackgroundRemoval({ file, onConfirm, onRetake }: {
       <ErrorText message={error} />
       {failed && <p className="mt-2 text-sm text-amber-900">Background removal failed for this photo. You can still save the item manually, but its score will be marked manual, not auto rated, until a better photo is provided. Try retaking in daylight against a plain wall.</p>}
       <div className="mt-3 flex flex-wrap gap-2">
-        <SecondaryButton onClick={onRetake}>Retake photo</SecondaryButton>
+        <Button variant="outline" onClick={onRetake}>Retake photo</Button>
         {cutoutUrl && <Button onClick={() => onConfirm({ originalUrl, cutoutUrl, dominantColours: dominant, backgroundRemoved: true, manual: false, file })}>Confirm cutout</Button>}
         {failed && <Button onClick={() => onConfirm({ originalUrl, cutoutUrl: null, dominantColours: [], backgroundRemoved: false, manual: true, file })}>Save manually</Button>}
       </div>

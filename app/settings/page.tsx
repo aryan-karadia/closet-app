@@ -14,7 +14,7 @@ import Link from 'next/link';
 import { useRequireAuth } from '../../lib/auth';
 import { api } from '../../lib/api-client';
 import type { Palette, Profile } from '../../lib/types';
-import { Button, Card, ErrorText, Field, Input, SecondaryButton } from '../../components/ui';
+import { Button, Card, ErrorText, Field, Input, Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '../../components/ui';
 import PwaInstall from '../../components/PwaInstall';
 
 const FREE_TIER_BYTES = 1024 * 1024 * 1024;
@@ -79,7 +79,10 @@ export default function SettingsPage() {
           <Field label="Display name"><Input value={displayName} onChange={(e) => setDisplayName(e.target.value)} /></Field>
           <Field label="Fit tags (comma separated, for example structured shoulder, relaxed body, fitted sleeve)"><Input value={fitTags} onChange={(e) => setFitTags(e.target.value)} /></Field>
           <Field label="Style direction"><Input value={styleDirection} onChange={(e) => setStyleDirection(e.target.value)} placeholder="Deep Winter Softboy with structure" /></Field>
-          <Field label="Active palette"><select value={activePaletteId} onChange={(e) => setActivePaletteId(e.target.value)} className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm"><option value="">None</option>{palettes.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}</select></Field>
+          <Field label="Active palette"><Select value={activePaletteId || 'none'} onValueChange={(v) => setActivePaletteId(v === 'none' ? '' : (v ?? ''))}>
+          <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
+          <SelectContent><SelectItem value="none">None</SelectItem>{palettes.map((p) => <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>)}</SelectContent>
+        </Select></Field>
           <p className="text-sm text-slate-600">Build, fit, and sizes are stored as fit tags and style direction on your profile, per the frozen profile API. Edit the tags above to change how the builder treats your fit.</p>
           <Button onClick={saveProfile}>Save profile</Button>
         </div>
@@ -106,17 +109,17 @@ export default function SettingsPage() {
       </Card>
       <Card>
         <h2 className="font-bold">Delete account</h2>
-        {!confirmDelete && <SecondaryButton className="mt-2" onClick={() => setConfirmDelete(true)}>Delete account</SecondaryButton>}
+        {!confirmDelete && <Button variant="outline" className="mt-2" onClick={() => setConfirmDelete(true)}>Delete account</Button>}
         {confirmDelete && (
           <div className="mt-2">
             <p className="text-sm text-red-800">Are you sure? This would delete all your data, including photos, palette, items, rules, outfits, and wear logs. This cannot be undone.</p>
             <div className="mt-2 flex gap-2">
               <Button onClick={() => { setError('Account deletion is blocked: the frozen API has no account delete endpoint. This has been reported to Agent D for routing to Agent B. Your data has not been deleted. Export your data first if you want a copy, then sign out.'); setConfirmDelete(false); }}>Confirm delete</Button>
-              <SecondaryButton onClick={() => setConfirmDelete(false)}>Cancel</SecondaryButton>
+              <Button variant="outline" onClick={() => setConfirmDelete(false)}>Cancel</Button>
             </div>
           </div>
         )}
-        <div className="mt-3"><SecondaryButton onClick={async () => { await signOut(); window.location.href = '/sign-in'; }}>Sign out</SecondaryButton></div>
+        <div className="mt-3"><Button variant="outline" onClick={async () => { await signOut(); window.location.href = '/sign-in'; }}>Sign out</Button></div>
       </Card>
     </div>
   );

@@ -12,7 +12,7 @@ import { useRequireAuth } from '../lib/auth';
 import { api } from '../lib/api-client';
 import type { AdviceRule, Item, Occasion, Season, Vibe } from '../lib/types';
 import { OCCASIONS, SEASONS, SLOT_LABELS, VIBES } from '../lib/types';
-import { Button, Card, ErrorText, Field, Select, SecondaryButton } from '../components/ui';
+import { Button, Card, ErrorText, Field, Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '../components/ui';
 import ScoreBadge from '../components/ScoreBadge';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const engine = require('../lib/outfit-engine/index.js');
@@ -145,9 +145,18 @@ export default function HomePage() {
         <h1 className="text-xl font-bold">Outfit Builder</h1>
         <p className="mt-1 text-sm text-slate-600">Choose an occasion, season, and vibe, then build 3 outfits from your in rotation items. Offline generation works from your last loaded wardrobe; if no wardrobe is cached, connect once to load it.</p>
         <div className="mt-3 grid grid-cols-3 gap-2">
-          <Field label="Occasion"><Select value={occasion} onChange={(e) => setOccasion(e.target.value as Occasion)}>{OCCASIONS.map((o) => <option key={o} value={o}>{o}</option>)}</Select></Field>
-          <Field label="Season"><Select value={season} onChange={(e) => setSeason(e.target.value as Season)}>{SEASONS.map((s) => <option key={s} value={s}>{s}</option>)}</Select></Field>
-          <Field label="Vibe"><Select value={vibe} onChange={(e) => setVibe(e.target.value as Vibe)}>{VIBES.map((v) => <option key={v} value={v}>{v}</option>)}</Select></Field>
+          <Field label="Occasion"><Select value={occasion} onValueChange={(v) => setOccasion((v ?? '') as Occasion)}>
+          <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
+          <SelectContent>{OCCASIONS.map((o) => <SelectItem key={o} value={o}>{o}</SelectItem>)}</SelectContent>
+        </Select></Field>
+          <Field label="Season"><Select value={season} onValueChange={(v) => setSeason((v ?? '') as Season)}>
+          <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
+          <SelectContent>{SEASONS.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
+        </Select></Field>
+          <Field label="Vibe"><Select value={vibe} onValueChange={(v) => setVibe((v ?? '') as Vibe)}>
+          <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
+          <SelectContent>{VIBES.map((v) => <SelectItem key={v} value={v}>{v}</SelectItem>)}</SelectContent>
+        </Select></Field>
         </div>
         <Button className="mt-3" onClick={build} disabled={building}>{building ? 'Building...' : 'Build outfits'}</Button>
         {status && <p className="mt-2 text-sm">{status}</p>}
@@ -169,7 +178,7 @@ export default function HomePage() {
                 <span><strong>{SLOT_LABELS[x.slot as keyof typeof SLOT_LABELS]}:</strong> {x.item.name} ({x.item.category})</span>
                 <ScoreBadge score={x.item.paletteScore} verdict={x.item.paletteVerdict} />
                 {(outfit.occasion || occasion) === 'interview' && !x.item.paletteVerdict && <span className="text-amber-900">Unrated, palette fit not verified</span>}
-                <SecondaryButton onClick={() => shuffleSlot(outfit, index, x.slot)}>Shuffle slot</SecondaryButton>
+                <Button variant="outline" onClick={() => shuffleSlot(outfit, index, x.slot)}>Shuffle slot</Button>
               </li>
             ))}
           </ul>
@@ -180,8 +189,8 @@ export default function HomePage() {
           </div>
           <div className="mt-3 flex flex-wrap gap-2">
             <Button onClick={() => saveOutfit(outfit, index)}>Save</Button>
-            <SecondaryButton onClick={() => logWorn(outfit, index)}>Log worn</SecondaryButton>
-            <SecondaryButton onClick={() => dislike(outfit)}>Dislike</SecondaryButton>
+            <Button variant="outline" onClick={() => logWorn(outfit, index)}>Log worn</Button>
+            <Button variant="outline" onClick={() => dislike(outfit)}>Dislike</Button>
             {outfit.savedId && <span className="text-sm text-slate-600">Saved.</span>}
           </div>
         </Card>

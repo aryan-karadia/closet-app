@@ -9,7 +9,7 @@ import { useEffect, useState } from 'react';
 import { useRequireAuth } from '../../lib/auth';
 import { api } from '../../lib/api-client';
 import type { AdviceRule } from '../../lib/types';
-import { Button, Card, ErrorText, Field, Input, Select, SecondaryButton } from '../../components/ui';
+import { Button, Card, ErrorText, Field, Input, Label, Select, SelectTrigger, SelectValue, SelectContent, SelectItem, Switch } from '../../components/ui';
 
 export default function AdviceRulesPage() {
   const { user, loading } = useRequireAuth();
@@ -63,7 +63,10 @@ export default function AdviceRulesPage() {
           <Field label="Name"><Input value={name} onChange={(e) => setName(e.target.value)} /></Field>
           <Field label="Condition category (optional)"><Input value={conditionCategory} onChange={(e) => setConditionCategory(e.target.value)} placeholder="top or outer" /></Field>
           <Field label="Condition fit tag (optional)"><Input value={conditionFitTag} onChange={(e) => setConditionFitTag(e.target.value)} placeholder="structured shoulder" /></Field>
-          <Field label="Action"><Select value={action} onChange={(e) => setAction(e.target.value as 'prefer' | 'avoid' | 'require')}><option value="prefer">prefer</option><option value="avoid">avoid</option><option value="require">require</option></Select></Field>
+          <Field label="Action"><Select value={action} onValueChange={(v) => setAction((v ?? '') as 'prefer' | 'avoid' | 'require')}>
+          <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
+          <SelectContent><SelectItem value="prefer">prefer</SelectItem><SelectItem value="avoid">avoid</SelectItem><SelectItem value="require">require</SelectItem></SelectContent>
+        </Select></Field>
           <Field label="Weight (0 to 100)"><Input type="number" min="0" max="100" value={weight} onChange={(e) => setWeight(e.target.value)} /></Field>
           <Field label="Reason"><Input value={reason} onChange={(e) => setReason(e.target.value)} /></Field>
           <Field label="Source"><Input value={source} onChange={(e) => setSource(e.target.value)} /></Field>
@@ -78,20 +81,20 @@ export default function AdviceRulesPage() {
               <Field label="Reason"><Input value={editing.reason} onChange={(e) => setEditing({ ...editing, reason: e.target.value })} /></Field>
               <Field label="Source"><Input value={editing.source} onChange={(e) => setEditing({ ...editing, source: e.target.value })} /></Field>
               <Field label="Weight"><Input type="number" min="0" max="100" value={editing.weight} onChange={(e) => setEditing({ ...editing, weight: Number(e.target.value) })} /></Field>
-              <div className="flex gap-2"><Button onClick={saveEdit}>Save</Button><SecondaryButton onClick={() => setEditing(null)}>Cancel</SecondaryButton></div>
+              <div className="flex gap-2"><Button onClick={saveEdit}>Save</Button><Button variant="outline" onClick={() => setEditing(null)}>Cancel</Button></div>
             </div>
           ) : (
             <>
               <div className="flex items-center gap-2">
                 <h2 className="font-bold">{rule.name}</h2>
-                <label className="ml-auto text-sm"><input type="checkbox" checked={rule.enabled} onChange={async (e) => { await api.patchAdviceRule(rule.id, { enabled: e.target.checked }); await load(); }} /> Enabled</label>
+                <div className="ml-auto flex items-center gap-2"><Switch checked={rule.enabled} onCheckedChange={async (v) => { await api.patchAdviceRule(rule.id, { enabled: v === true }); await load(); }} /><Label>Enabled</Label></div>
               </div>
               <p className="mt-1 text-sm"><strong>Reason:</strong> {rule.reason}</p>
               <p className="text-sm"><strong>Source:</strong> {rule.source}</p>
               <p className="text-sm text-slate-600">Action: {rule.action} | Weight: {rule.weight} | Category: {rule.conditionCategory || 'any'} | Fit tag: {rule.conditionFitTag || 'any'}</p>
               <div className="mt-2 flex gap-2">
-                <SecondaryButton onClick={() => setEditing(rule)}>Edit</SecondaryButton>
-                <SecondaryButton onClick={async () => { if (confirm('Delete this rule?')) { await api.deleteAdviceRule(rule.id); await load(); } }}>Delete</SecondaryButton>
+                <Button variant="outline" onClick={() => setEditing(rule)}>Edit</Button>
+                <Button variant="outline" onClick={async () => { if (confirm('Delete this rule?')) { await api.deleteAdviceRule(rule.id); await load(); } }}>Delete</Button>
               </div>
             </>
           )}

@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { useRequireAuth } from '../../../../lib/auth';
 import { api } from '../../../../lib/api-client';
-import { Button, Card, ErrorText, Field, Input, Select, SecondaryButton } from '../../../../components/ui';
+import { Button, Card, ErrorText, Field, Input, Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '../../../../components/ui';
 import { CATEGORIES, SEASONS } from '../../../../lib/types';
 
 export default function EditItemPage() {
@@ -53,16 +53,25 @@ export default function EditItemPage() {
       <h1 className="text-xl font-bold">Edit item</h1>
       <div className="mt-3 flex flex-col gap-3">
         <Field label="Name"><Input value={name} onChange={(e) => setName(e.target.value)} /></Field>
-        <Field label="Category"><Select value={category} onChange={(e) => setCategory(e.target.value)}>{CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}</Select></Field>
-        <Field label="Season"><Select value={season} onChange={(e) => setSeason(e.target.value)}>{SEASONS.map((s) => <option key={s} value={s}>{s}</option>)}</Select></Field>
+        <Field label="Category"><Select value={category} onValueChange={(v) => setCategory(v ?? '')}>
+          <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
+          <SelectContent>{CATEGORIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
+        </Select></Field>
+        <Field label="Season"><Select value={season} onValueChange={(v) => setSeason(v ?? '')}>
+          <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
+          <SelectContent>{SEASONS.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
+        </Select></Field>
         <Field label="Fit tags (comma separated)"><Input value={fitTags} onChange={(e) => setFitTags(e.target.value)} /></Field>
-        <Field label="Status"><Select value={status} onChange={(e) => setStatus(e.target.value)}><option value="in rotation">in rotation</option><option value="stored">stored</option><option value="archived">archived</option></Select></Field>
+        <Field label="Status"><Select value={status} onValueChange={(v) => setStatus(v ?? '')}>
+          <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
+          <SelectContent><SelectItem value="in rotation">in rotation</SelectItem><SelectItem value="stored">stored</SelectItem><SelectItem value="archived">archived</SelectItem></SelectContent>
+        </Select></Field>
         <Field label="Price (optional)"><Input type="number" min="0" step="0.01" value={price} onChange={(e) => setPrice(e.target.value)} /></Field>
         <Field label="Manual score override (optional, 0 to 100)"><Input type="number" min="0" max="100" value={manualScore} onChange={(e) => setManualScore(e.target.value)} /></Field>
         <Field label="Manual score note"><Input value={manualNote} onChange={(e) => setManualNote(e.target.value)} placeholder="looks better in person" /></Field>
         <p className="text-sm text-slate-600">Clearing the manual score restores the auto score as the effective score.</p>
         <ErrorText message={error} />
-        <div className="flex gap-2"><Button onClick={save}>Save changes</Button><SecondaryButton onClick={() => { setManualScore(''); setManualNote(''); }}>Clear override (then save)</SecondaryButton></div>
+        <div className="flex gap-2"><Button onClick={save}>Save changes</Button><Button variant="outline" onClick={() => { setManualScore(''); setManualNote(''); }}>Clear override (then save)</Button></div>
       </div>
     </Card>
   );

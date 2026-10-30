@@ -4,7 +4,7 @@
 // No em dashes are used in this file.
 'use client';
 import { useEffect, useState } from 'react';
-import { Button, SecondaryButton } from './ui';
+import { Button } from './ui';
 
 export default function PwaInstall() {
   const [promptEvent, setPromptEvent] = useState<unknown>(null);
@@ -25,7 +25,7 @@ export default function PwaInstall() {
   return (
     <div className="flex items-center gap-2">
       <Button onClick={async () => { const event = promptEvent as { prompt: () => Promise<void> }; await event.prompt(); setPromptEvent(null); }}>Install Closet</Button>
-      <SecondaryButton onClick={() => setPromptEvent(null)}>Not now</SecondaryButton>
+      <Button variant="outline" onClick={() => setPromptEvent(null)}>Not now</Button>
     </div>
   );
 }
