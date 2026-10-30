@@ -24,6 +24,8 @@ interface BuiltOutfit {
   missingSlots: string[];
   paletteScore: number; fitScore: number; contrastScore: number; rotationScore: number; totalScore: number;
   explanation: string[]; savedId?: string | null;
+  occasion?: Occasion;
+  hasUnratedItems?: boolean; unratedItemIds?: string[]; allItemsUnrated?: boolean;
 }
 
 export default function HomePage() {
@@ -109,7 +111,18 @@ export default function HomePage() {
     const slots: Record<string, Item | null> = { 'base-top': null, 'outer-layer': null, bottom: null, shoes: null, accessory: null };
     for (const x of newItems) slots[x.slot] = x.item;
     const scores = engine.scoreOutfit(slots, rules);
-    setOutfits((list) => list.map((o, i) => (i === index ? { ...o, items: newItems, ...scores, savedId: null } : o)));
+    // ISSUE-34: a shuffled outfit must carry the same unrated warning
+    // as a fresh build. Recompute the warning from the new items and
+    // rebuild the explanation warning lines, instead of keeping stale
+    // warnings from the pre-shuffle outfit.
+    const summary = engine.unratedSummary ? engine.unratedSummary(newItems) : { hasUnratedItems: newItems.some((x) => !x.item.paletteVerdict), unratedItemIds: newItems.filter((x) => !x.item.paletteVerdict).map((x) => x.itemId), allItemsUnrated: newItems.length > 0 && newItems.every((x) => !x.item.paletteVerdict) };
+    const warningLines = ['Unrated item included, palette fit not verified', 'All items are unrated, so this is not a verified interview outfit.'];
+    const baseExplanation = outfit.explanation.filter((line) => !warningLines.includes(line));
+    if (occasion === 'interview' && summary.hasUnratedItems) {
+      baseExplanation.push('Unrated item included, palette fit not verified');
+      if (summary.allItemsUnrated) baseExplanation.push('All items are unrated, so this is not a verified interview outfit.');
+    }
+    setOutfits((list) => list.map((o, i) => (i === index ? { ...o, items: newItems, ...scores, explanation: baseExplanation, hasUnratedItems: summary.hasUnratedItems, unratedItemIds: summary.unratedItemIds, allItemsUnrated: summary.allItemsUnrated, savedId: null } : o)));
   }
 
   return (
@@ -133,12 +146,15 @@ export default function HomePage() {
             <ScoreBadge score={outfit.totalScore} verdict={outfit.totalScore >= 90 ? 'Perfect' : outfit.totalScore >= 70 ? 'Strong' : outfit.totalScore >= 50 ? 'Works' : 'Avoid'} />
             <span className="text-sm text-slate-600">Palette {outfit.paletteScore} | Fit {outfit.fitScore} | Contrast {outfit.contrastScore} | Rotation {outfit.rotationScore}</span>
           </div>
+          {(outfit.occasion || occasion) === 'interview' && outfit.items.some((x) => !x.item.paletteVerdict) && <p className="mt-2 text-sm text-amber-900">Unrated item included, palette fit not verified</p>}
+          {(outfit.occasion || occasion) === 'interview' && outfit.items.length > 0 && outfit.items.every((x) => !x.item.paletteVerdict) && <p className="mt-2 text-sm text-amber-900">Not a verified interview outfit: all items are unrated.</p>}
           <ul className="mt-3 flex flex-col gap-2">
             {outfit.items.map((x) => (
               <li key={x.slot} className="flex items-center gap-3 text-sm">
                 {x.item.thumbnailSignedUrl && <img src={x.item.thumbnailSignedUrl} alt={x.item.name} className="h-12 w-12 rounded object-cover" loading="lazy" />}
                 <span><strong>{SLOT_LABELS[x.slot as keyof typeof SLOT_LABELS]}:</strong> {x.item.name} ({x.item.category})</span>
                 <ScoreBadge score={x.item.paletteScore} verdict={x.item.paletteVerdict} />
+                {(outfit.occasion || occasion) === 'interview' && !x.item.paletteVerdict && <span className="text-amber-900">Unrated, palette fit not verified</span>}
                 <SecondaryButton onClick={() => shuffleSlot(outfit, index, x.slot)}>Shuffle slot</SecondaryButton>
               </li>
             ))}
