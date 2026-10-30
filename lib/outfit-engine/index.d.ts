@@ -17,8 +17,9 @@ export interface BuildInput {
   items: EngineItem[]; occasion: Occasion; season: Season; vibe?: string | null;
   adviceRules?: AdviceRule[]; disliked?: unknown[]; now?: string | null;
 }
-export function buildOutfits(input: BuildInput): EngineOutfit[];
-export function build(input: BuildInput): EngineOutfit[];
+export type BuildResult = EngineOutfit[] & { diversityMessage?: string | null };
+export function buildOutfits(input: BuildInput): BuildResult;
+export function build(input: BuildInput): BuildResult;
 export interface ShuffleCheck { valid: boolean; reason: string }
 export interface ShuffleReplacementInput {
   replacement: EngineItem; outfitItems: EngineOutfitItem[]; slot?: Slot;

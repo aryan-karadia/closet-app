@@ -69,6 +69,15 @@ export default function HomePage() {
       const result = await buildWithWorker({ items, occasion, season, vibe, adviceRules: rules, disliked: loadDislikes() });
       setOutfits(result);
       if (!result.length) setStatus('No outfit could be built from in rotation items for this occasion and season. Add items, or try a different season.');
+      else {
+        // Diversity message (refs ISSUE-33): the engine returns fewer
+        // than 3 outfits rather than repeating a top and outer pair.
+        // The worker may strip the attached message, so fall back to
+        // the same explanation when fewer than 3 outfits are returned.
+        const diversityMessage = (result as BuiltOutfit[] & { diversityMessage?: string }).diversityMessage;
+        if (diversityMessage) setStatus(diversityMessage);
+        else if (result.length < 3) setStatus('Only ' + result.length + ' distinct top and outer pair' + (result.length === 1 ? '' : 's') + ' available, so fewer than 3 outfits are shown instead of repeating a pair.');
+      }
     } catch (e) { setError(e instanceof Error ? e.message : 'Build failed.'); }
     setBuilding(false);
   }
