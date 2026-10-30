@@ -102,8 +102,13 @@ export default function HomePage() {
 
   function shuffleSlot(outfit: BuiltOutfit, index: number, slot: string) {
     const current = outfit.items.find((x) => x.slot === slot);
-    const alternatives = items.filter((item) => engine.slotForCategory(item.category, item.name) === slot && item.status === 'in rotation' && (!current || item.id !== current.itemId));
-    if (!alternatives.length) { setStatus('No alternative available for ' + SLOT_LABELS[slot as keyof typeof SLOT_LABELS] + '.'); return; }
+    const disliked = loadDislikes();
+    // Route every candidate through the same hard rules as buildOutfits
+    // (refs ISSUE-32): status, season, verdict, interview category
+    // exclusions, accent count, and disliked combinations. A candidate
+    // that fails any check is never picked, even if it has the top score.
+    const alternatives = items.filter((item) => engine.slotForCategory(item.category, item.name) === slot && (!current || item.id !== current.itemId)).filter((item) => engine.validateShuffleReplacement({ replacement: item, outfitItems: outfit.items, slot, occasion, season, disliked }).valid);
+    if (!alternatives.length) { setStatus('No alternative for ' + SLOT_LABELS[slot as keyof typeof SLOT_LABELS] + ' passes the hard rules for this occasion. The outfit is unchanged.'); return; }
     const replacement = [...alternatives].sort((a, b) => (b.paletteScore || 0) - (a.paletteScore || 0))[0];
     const newItems = outfit.items.map((x) => (x.slot === slot ? { itemId: replacement.id, slot, item: replacement } : x));
     const slots: Record<string, Item | null> = { 'base-top': null, 'outer-layer': null, bottom: null, shoes: null, accessory: null };
