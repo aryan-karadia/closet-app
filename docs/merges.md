@@ -78,3 +78,16 @@ Format for each merge:
 - Mismatch routed to Agent B, not merged away: POST /api/outfits/:outfitId/items, duplicate item. Expected per contract: 400 VALIDATION_ERROR. Actual on local dev server: adding the same item in a free slot returns 201 and moves the item to the new slot. A different item in an occupied slot correctly returns 400, and POST /api/outfits create correctly returns 400 for a duplicate item. Fix routed to Agent B as ISSUE-13 duplicate item fix, to be verified by Agent C live re-run before contract freeze.
 - OpenAPI disagreements routed to Agent B: 9 disagreements between docs/api-contract.md and docs/openapi.yaml, listed in the C PR file and TEST-PLAN Blocked item 4, contract doc wins. Fix routed to Agent B as ISSUE-23 OpenAPI alignment.
 - Agent D approval: yes, for the test branch only. This merge does not freeze the contract and does not claim the backend duplicate item bug is fixed.
+
+## Merge: fix/ISSUE-13-duplicate-outfit-item and fix/ISSUE-23-openapi-alignment, and contract freeze
+
+- Date: 2026-10-30
+- Branches merged in order, hashes verified by Agent D and matching Agent B report exactly:
+  1. fix/ISSUE-13-duplicate-outfit-item b5e6cba0f79e57dd5e25d1ed482ece59477d91a3
+  2. fix/ISSUE-23-openapi-alignment 6639e352c36138dcbb2a1c8ff2a853bb62662120, based on branch 1
+- Files changed vs main, verified by Agent D: only lib/api/outfits.js (3 lines added), docs/openapi.yaml (356 lines changed, 347 insertions, 9 deletions), and the two PR files. No test file was edited. docs/api-contract.md was not changed by Agent B.
+- Tests: Agent D ran sh scripts/check-tests.sh on the final fix branch. Without CLOSET_TEST_BASE_URL: total 135, pass 113, fail 0, skipped 22. Live against a local dev server (CLOSET_TEST_MODE=1, PORT=3101, CLOSET_TEST_BASE_URL=http://localhost:3101), verified by Agent D: total 135, pass 127, fail 0, skipped 8 (outfit engine 5, palette ingester 3). Before the fix the live run was 126 pass, 1 fail, 8 skipped. The duplicate item case now passes, and the item was not moved, per Agent B manual probe and the live test.
+- Spec and contract check: Duplicate check in addOutfitItem returns 400 VALIDATION_ERROR with details { items: "Duplicate item in one outfit." }, matching the create endpoint. Existing duplicate slot check unchanged. OpenAPI now matches the contract doc for all 9 items listed in the Agent C PR file, contract doc wins. No contract change by Agent B in this fix.
+- Secrets check: No real credentials. Em dash check: none found in the fix diff.
+- Contract freeze: Agent D freezes the API contract as documented in docs/api-contract.md plus docs/openapi.yaml, as of this merge, for Agent A work. Future contract changes require Agent D approval and an Agent C contract test update. See docs/contract-freeze.md.
+- Agent D approval: yes, for both fix branches, and for contract freeze.
