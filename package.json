@@ -1,1 +1,27 @@
-{"dependencies":{"@supabase/supabase-js":"^2.118.0","@tailwindcss/postcss":"^4.3.3","next":"^15.0.0","pdfjs-dist":"^6.4.299","react":"^19.0.0","react-dom":"^19.0.0","tailwindcss":"^4.3.3"},"description":"Personal closet app MVP: palette rating and outfit builder. Backend API routes live under app/api and share lib/api/router.js with scripts/dev-server.js.","devDependencies":{"@types/node":"^22.0.0","@types/react":"^19.0.0","typescript":"^5.6.0"},"name":"closet-app","private":true,"scripts":{"build":"next build","dev":"next dev","dev:api":"node scripts/dev-server.js","start":"next start","test":"sh scripts/check-tests.sh"},"version":"0.1.0"}
+{
+    "dependencies": {
+        "@supabase/supabase-js": "^2.118.0",
+        "@tailwindcss/postcss": "^4.3.3",
+        "next": "^15.0.0",
+        "pdfjs-dist": "^6.4.299",
+        "react": "^19.0.0",
+        "react-dom": "^19.0.0",
+        "tailwindcss": "^4.3.3"
+    },
+    "description": "Personal closet app MVP: palette rating and outfit builder. Backend API routes live under app/api and share lib/api/router.js with scripts/dev-server.js.",
+    "devDependencies": {
+        "@types/node": "^22.0.0",
+        "@types/react": "^19.0.0",
+        "typescript": "^5.6.0"
+    },
+    "name": "closet-app",
+    "private": true,
+    "scripts": {
+        "build": "next build",
+        "dev": "next dev",
+        "dev:api": "node scripts/dev-server.js",
+        "start": "next start",
+        "test": "sh scripts/check-tests.sh"
+    },
+    "version": "0.1.0"
+}
