@@ -1,0 +1,2355 @@
+openapi: 3.0.3
+info:
+  title: Closet App MVP API
+  description: DRAFT, not frozen. Machine readable form of docs/api-contract.md, which is the human readable source of truth. If they disagree, docs/api-contract.md wins and this file must be corrected through Agent D.
+  version: 0.0.0-draft
+servers:
+  - url: http://localhost:3101
+    description: Local dev server
+tags:
+  - name: auth
+  - name: profile
+  - name: palettes
+  - name: items
+  - name: uploads
+  - name: outfits
+  - name: wear-logs
+  - name: advice-rules
+  - name: export
+security:
+  - bearerAuth: []
+paths:
+  /api/auth/session:
+    get:
+      tags: [auth]
+      summary: Current session user
+      responses:
+        '200':
+          description: Session user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Session'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+  /api/profile:
+    get:
+      tags: [profile]
+      summary: Get current user profile
+      responses:
+        '200':
+          description: Profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+    patch:
+      tags: [profile]
+      summary: Update current user profile
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProfileUpdate'
+      responses:
+        '200':
+          description: Profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /api/palettes:
+    get:
+      tags: [palettes]
+      summary: List palettes
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+      responses:
+        '200':
+          description: Palette list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaletteList'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+    post:
+      tags: [palettes]
+      summary: Create a palette
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaletteCreate'
+      responses:
+        '201':
+          description: Palette
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Palette'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+  /api/palettes/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      tags: [palettes]
+      summary: Get one palette with colours and avoid rules
+      responses:
+        '200':
+          description: Palette
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Palette'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      tags: [palettes]
+      summary: Update a palette
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaletteUpdate'
+      responses:
+        '200':
+          description: Palette
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Palette'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags: [palettes]
+      summary: Delete a palette. Items are never deleted by this.
+      responses:
+        '200':
+          description: Deleted marker
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Deleted'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/palettes/{id}/activate:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    post:
+      tags: [palettes]
+      summary: Make this palette the active palette
+      responses:
+        '200':
+          description: Palette
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Palette'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/palettes/{id}/versions:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    post:
+      tags: [palettes]
+      summary: Create a new version copy of a palette
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                activate:
+                  type: boolean
+                name:
+                  type: string
+      responses:
+        '201':
+          description: New palette version
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Palette'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/palettes/{id}/rerate:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    post:
+      tags: [palettes]
+      summary: Re-rate all user items against this palette
+      responses:
+        '200':
+          description: Re-rate counts
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RerateResult'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/palettes/{paletteId}/colours:
+    parameters:
+      - name: paletteId
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      tags: [palettes]
+      summary: List palette colours
+      parameters:
+        - name: role
+          in: query
+          schema:
+            $ref: '#/components/schemas/PaletteRole'
+      responses:
+        '200':
+          description: Palette colour list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaletteColourList'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    post:
+      tags: [palettes]
+      summary: Add a palette colour
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaletteColourCreate'
+      responses:
+        '201':
+          description: Palette colour
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaletteColour'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/palettes/{paletteId}/colours/{colourId}:
+    parameters:
+      - name: paletteId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: colourId
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      tags: [palettes]
+      summary: Get one palette colour
+      responses:
+        '200':
+          description: Palette colour
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaletteColour'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      tags: [palettes]
+      summary: Update a palette colour
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaletteColourUpdate'
+      responses:
+        '200':
+          description: Palette colour
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaletteColour'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags: [palettes]
+      summary: Delete a palette colour
+      responses:
+        '200':
+          description: Deleted marker
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Deleted'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/palettes/{paletteId}/avoid-rules:
+    parameters:
+      - name: paletteId
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      tags: [palettes]
+      summary: List avoid rules
+      responses:
+        '200':
+          description: Avoid rule list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AvoidRuleList'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    post:
+      tags: [palettes]
+      summary: Create an avoid rule
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AvoidRuleCreate'
+      responses:
+        '201':
+          description: Avoid rule
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AvoidRule'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/palettes/{paletteId}/avoid-rules/{ruleId}:
+    parameters:
+      - name: paletteId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: ruleId
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      tags: [palettes]
+      summary: Get one avoid rule
+      responses:
+        '200':
+          description: Avoid rule
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AvoidRule'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      tags: [palettes]
+      summary: Update an avoid rule
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AvoidRuleUpdate'
+      responses:
+        '200':
+          description: Avoid rule
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AvoidRule'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags: [palettes]
+      summary: Delete an avoid rule
+      responses:
+        '200':
+          description: Deleted marker
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Deleted'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/items:
+    get:
+      tags: [items]
+      summary: List items with filters
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+        - name: category
+          in: query
+          schema:
+            type: string
+        - name: paletteVerdict
+          in: query
+          schema:
+            $ref: '#/components/schemas/Verdict'
+        - name: season
+          in: query
+          schema:
+            $ref: '#/components/schemas/Season'
+        - name: fitTag
+          in: query
+          schema:
+            type: string
+        - name: status
+          in: query
+          schema:
+            $ref: '#/components/schemas/ItemStatus'
+        - name: colourFamily
+          in: query
+          schema:
+            type: string
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: sort
+          in: query
+          schema:
+            type: string
+            enum: [paletteScore, wearCount, recent, name]
+      responses:
+        '200':
+          description: Item list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ItemList'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+    post:
+      tags: [items]
+      summary: Create an item
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ItemCreate'
+      responses:
+        '201':
+          description: Item
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+  /api/items/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      tags: [items]
+      summary: Get one item with colours and signed photo URLs
+      responses:
+        '200':
+          description: Item
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      tags: [items]
+      summary: Update an item
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ItemUpdate'
+      responses:
+        '200':
+          description: Item
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags: [items]
+      summary: Soft delete an item
+      responses:
+        '200':
+          description: Deleted marker
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Deleted'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/items/{id}/restore:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    post:
+      tags: [items]
+      summary: Restore a soft deleted item within 30 days
+      responses:
+        '200':
+          description: Item
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/items/{id}/permanent-delete:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    post:
+      tags: [items]
+      summary: Permanently delete an already soft deleted item
+      responses:
+        '200':
+          description: Deleted marker
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Deleted'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/items/{itemId}/colours:
+    parameters:
+      - name: itemId
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      tags: [items]
+      summary: List item colours
+      responses:
+        '200':
+          description: Item colour list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ItemColourList'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    post:
+      tags: [items]
+      summary: Replace the full item colour set
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [colours]
+              properties:
+                colours:
+                  type: array
+                  maxItems: 3
+                  items:
+                    $ref: '#/components/schemas/ItemColourCreate'
+      responses:
+        '200':
+          description: Item colour list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ItemColourList'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/uploads:
+    post:
+      tags: [uploads]
+      summary: Upload a compressed WebP image through the StorageProvider
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UploadCreate'
+      responses:
+        '201':
+          description: Upload result with storage path, never a public URL
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UploadResult'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /api/uploads/signed-url:
+    post:
+      tags: [uploads]
+      summary: Get a short lived signed URL for a storage path
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [path]
+              properties:
+                path:
+                  type: string
+                expiresInSeconds:
+                  type: integer
+                  minimum: 60
+                  maximum: 86400
+                  default: 3600
+      responses:
+        '200':
+          description: Signed URL
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SignedUrl'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/outfits:
+    get:
+      tags: [outfits]
+      summary: List outfits
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+        - name: occasion
+          in: query
+          schema:
+            $ref: '#/components/schemas/Occasion'
+        - name: saved
+          in: query
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Outfit list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OutfitList'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+    post:
+      tags: [outfits]
+      summary: Create an outfit
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OutfitCreate'
+      responses:
+        '201':
+          description: Outfit
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Outfit'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /api/outfits/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      tags: [outfits]
+      summary: Get one outfit with items
+      responses:
+        '200':
+          description: Outfit
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Outfit'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      tags: [outfits]
+      summary: Update an outfit
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OutfitUpdate'
+      responses:
+        '200':
+          description: Outfit
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Outfit'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags: [outfits]
+      summary: Delete an outfit and its outfit items
+      responses:
+        '200':
+          description: Deleted marker
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Deleted'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/outfits/{outfitId}/items:
+    parameters:
+      - name: outfitId
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      tags: [outfits]
+      summary: List outfit items
+      responses:
+        '200':
+          description: Outfit item list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OutfitItemList'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    post:
+      tags: [outfits]
+      summary: Add one item to an outfit in a slot
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OutfitItemCreate'
+      responses:
+        '201':
+          description: Outfit item
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OutfitItem'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/outfits/{outfitId}/items/{itemId}:
+    parameters:
+      - name: outfitId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: itemId
+        in: path
+        required: true
+        schema:
+          type: string
+    delete:
+      tags: [outfits]
+      summary: Remove an item from an outfit
+      responses:
+        '200':
+          description: Deleted marker
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Deleted'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/wear-logs:
+    get:
+      tags: [wear-logs]
+      summary: List wear logs
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+        - name: outfitId
+          in: query
+          schema:
+            type: string
+        - name: occasion
+          in: query
+          schema:
+            $ref: '#/components/schemas/Occasion'
+      responses:
+        '200':
+          description: Wear log list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WearLogList'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+    post:
+      tags: [wear-logs]
+      summary: Log an outfit as worn, increments wear counts
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WearLogCreate'
+      responses:
+        '201':
+          description: Wear log
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WearLog'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/wear-logs/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      tags: [wear-logs]
+      summary: Get one wear log
+      responses:
+        '200':
+          description: Wear log
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WearLog'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags: [wear-logs]
+      summary: Delete a wear log, decrements wear counts
+      responses:
+        '200':
+          description: Deleted marker
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Deleted'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/advice-rules:
+    get:
+      tags: [advice-rules]
+      summary: List advice rules
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+        - name: enabled
+          in: query
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Advice rule list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdviceRuleList'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+    post:
+      tags: [advice-rules]
+      summary: Create an advice rule
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdviceRuleCreate'
+      responses:
+        '201':
+          description: Advice rule
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdviceRule'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+  /api/advice-rules/seed:
+    post:
+      tags: [advice-rules]
+      summary: Create the 10 spec section 6.5 starting rules if none exist
+      responses:
+        '200':
+          description: Existing rules, not seeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdviceRuleSeedResult'
+        '201':
+          description: Seeded rules
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdviceRuleSeedResult'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+  /api/advice-rules/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      tags: [advice-rules]
+      summary: Get one advice rule
+      responses:
+        '200':
+          description: Advice rule
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdviceRule'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      tags: [advice-rules]
+      summary: Update an advice rule
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdviceRuleUpdate'
+      responses:
+        '200':
+          description: Advice rule
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdviceRule'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags: [advice-rules]
+      summary: Delete an advice rule
+      responses:
+        '200':
+          description: Deleted marker
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Deleted'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/export:
+    post:
+      tags: [export]
+      summary: Export all user data as a ZIP file
+      responses:
+        '200':
+          description: ZIP file
+          content:
+            application/zip:
+              schema:
+                type: string
+                format: binary
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    Page:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+    PageSize:
+      name: pageSize
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+  responses:
+    ValidationError:
+      description: Invalid input
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Unauthenticated:
+      description: Unauthenticated
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Forbidden:
+      description: Wrong owner
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: Missing resource
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  schemas:
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code, message]
+          properties:
+            code:
+              type: string
+              enum: [VALIDATION_ERROR, UNAUTHENTICATED, FORBIDDEN, NOT_FOUND, METHOD_NOT_ALLOWED, INTERNAL_ERROR]
+            message:
+              type: string
+            details:
+              type: object
+              additionalProperties:
+                type: string
+    Deleted:
+      type: object
+      properties:
+        deleted:
+          type: boolean
+        id:
+          type: string
+        softDeleted:
+          type: boolean
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+        pageSize:
+          type: integer
+        total:
+          type: integer
+    Session:
+      type: object
+      properties:
+        user:
+          type: object
+          properties:
+            id:
+              type: string
+            email:
+              type: string
+              nullable: true
+    Profile:
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        displayName:
+          type: string
+          nullable: true
+        fitTags:
+          type: array
+          items:
+            type: string
+        styleDirection:
+          type: string
+          nullable: true
+        activePaletteId:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    ProfileUpdate:
+      type: object
+      properties:
+        displayName:
+          type: string
+          nullable: true
+          maxLength: 100
+        fitTags:
+          type: array
+          maxItems: 20
+          items:
+            type: string
+        styleDirection:
+          type: string
+          nullable: true
+          maxLength: 200
+        activePaletteId:
+          type: string
+          nullable: true
+    ColourFamily:
+      type: string
+      enum: [blue, green, purple, red, teal, plum, burgundy, black, gray, navy, orange, brown, pink, yellow, white, other]
+    PaletteRole:
+      type: string
+      enum: [core, neutral, avoid]
+    Season:
+      type: string
+      enum: [winter, spring, autumn, summer, all-season]
+    Verdict:
+      type: string
+      enum: [Perfect, Strong, Works, Avoid]
+    ItemStatus:
+      type: string
+      enum: [in rotation, stored, archived]
+    Occasion:
+      type: string
+      enum: [daily, interview, formal, japan-travel, date-evening]
+    OutfitSlot:
+      type: string
+      enum: [base-top, outer-layer, bottom, shoes, accessory]
+    Vibe:
+      type: string
+      enum: [structured-softboy, clean-minimal, light-old-money, streetwear-minimal]
+    AdviceAction:
+      type: string
+      enum: [prefer, avoid, require]
+    Palette:
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        name:
+          type: string
+        sourceFileName:
+          type: string
+          nullable: true
+        uploadedAt:
+          type: string
+          format: date-time
+        isActive:
+          type: boolean
+        version:
+          type: integer
+        colours:
+          type: array
+          items:
+            $ref: '#/components/schemas/PaletteColour'
+        avoidRules:
+          type: array
+          items:
+            $ref: '#/components/schemas/AvoidRule'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    PaletteCreate:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        sourceFileName:
+          type: string
+          nullable: true
+        isActive:
+          type: boolean
+    PaletteUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        sourceFileName:
+          type: string
+          nullable: true
+        isActive:
+          type: boolean
+    PaletteList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Palette'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    RerateResult:
+      type: object
+      properties:
+        paletteId:
+          type: string
+        reratedCount:
+          type: integer
+        skippedCount:
+          type: integer
+        totalCount:
+          type: integer
+    PaletteColour:
+      type: object
+      properties:
+        id:
+          type: string
+        paletteId:
+          type: string
+        name:
+          type: string
+        hex:
+          type: string
+          pattern: '^#[0-9A-Fa-f]{6}$'
+        labL:
+          type: number
+        labA:
+          type: number
+        labB:
+          type: number
+        hue:
+          type: number
+        saturation:
+          type: number
+        lightness:
+          type: number
+        family:
+          $ref: '#/components/schemas/ColourFamily'
+        role:
+          $ref: '#/components/schemas/PaletteRole'
+        sourcePage:
+          type: integer
+          nullable: true
+        isManual:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    PaletteColourCreate:
+      type: object
+      required: [name, hex, family, role]
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        hex:
+          type: string
+          pattern: '^#[0-9A-Fa-f]{6}$'
+        labL:
+          type: number
+        labA:
+          type: number
+        labB:
+          type: number
+        hue:
+          type: number
+          minimum: 0
+          maximum: 360
+        saturation:
+          type: number
+          minimum: 0
+          maximum: 100
+        lightness:
+          type: number
+          minimum: 0
+          maximum: 100
+        family:
+          $ref: '#/components/schemas/ColourFamily'
+        role:
+          $ref: '#/components/schemas/PaletteRole'
+        sourcePage:
+          type: integer
+          nullable: true
+          minimum: 1
+        isManual:
+          type: boolean
+    PaletteColourUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        hex:
+          type: string
+          pattern: '^#[0-9A-Fa-f]{6}$'
+        labL:
+          type: number
+        labA:
+          type: number
+        labB:
+          type: number
+        hue:
+          type: number
+          minimum: 0
+          maximum: 360
+        saturation:
+          type: number
+          minimum: 0
+          maximum: 100
+        lightness:
+          type: number
+          minimum: 0
+          maximum: 100
+        family:
+          $ref: '#/components/schemas/ColourFamily'
+        role:
+          $ref: '#/components/schemas/PaletteRole'
+        sourcePage:
+          type: integer
+          nullable: true
+          minimum: 1
+        isManual:
+          type: boolean
+    PaletteColourList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/PaletteColour'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    AvoidRule:
+      type: object
+      properties:
+        id:
+          type: string
+        paletteId:
+          type: string
+        name:
+          type: string
+        hueMin:
+          type: number
+        hueMax:
+          type: number
+        saturationMin:
+          type: number
+        saturationMax:
+          type: number
+        lightnessMin:
+          type: number
+        lightnessMax:
+          type: number
+        description:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    AvoidRuleCreate:
+      type: object
+      required: [name, hueMin, hueMax, saturationMin, saturationMax, lightnessMin, lightnessMax]
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        hueMin:
+          type: number
+          minimum: 0
+          maximum: 360
+        hueMax:
+          type: number
+          minimum: 0
+          maximum: 360
+        saturationMin:
+          type: number
+          minimum: 0
+          maximum: 100
+        saturationMax:
+          type: number
+          minimum: 0
+          maximum: 100
+        lightnessMin:
+          type: number
+          minimum: 0
+          maximum: 100
+        lightnessMax:
+          type: number
+          minimum: 0
+          maximum: 100
+        description:
+          type: string
+          nullable: true
+    AvoidRuleUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        hueMin:
+          type: number
+          minimum: 0
+          maximum: 360
+        hueMax:
+          type: number
+          minimum: 0
+          maximum: 360
+        saturationMin:
+          type: number
+          minimum: 0
+          maximum: 100
+        saturationMax:
+          type: number
+          minimum: 0
+          maximum: 100
+        lightnessMin:
+          type: number
+          minimum: 0
+          maximum: 100
+        lightnessMax:
+          type: number
+          minimum: 0
+          maximum: 100
+        description:
+          type: string
+          nullable: true
+    AvoidRuleList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/AvoidRule'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    ItemColourCreate:
+      type: object
+      required: [hex, percentage]
+      properties:
+        hex:
+          type: string
+          pattern: '^#[0-9A-Fa-f]{6}$'
+        labL:
+          type: number
+        labA:
+          type: number
+        labB:
+          type: number
+        percentage:
+          type: number
+          minimum: 0
+          maximum: 100
+        isPrimary:
+          type: boolean
+    ItemColour:
+      type: object
+      properties:
+        id:
+          type: string
+        itemId:
+          type: string
+        hex:
+          type: string
+        labL:
+          type: number
+        labA:
+          type: number
+        labB:
+          type: number
+        percentage:
+          type: number
+        isPrimary:
+          type: boolean
+        family:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+    ItemColourList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ItemColour'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    Item:
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        name:
+          type: string
+        category:
+          type: string
+        season:
+          $ref: '#/components/schemas/Season'
+        fitTags:
+          type: array
+          items:
+            type: string
+        status:
+          $ref: '#/components/schemas/ItemStatus'
+        price:
+          type: number
+          nullable: true
+        location:
+          type: string
+          nullable: true
+        photoPath:
+          type: string
+          nullable: true
+        thumbnailPath:
+          type: string
+          nullable: true
+        photoSignedUrl:
+          type: string
+          nullable: true
+        thumbnailSignedUrl:
+          type: string
+          nullable: true
+        primaryColorHex:
+          type: string
+          nullable: true
+        paletteScore:
+          type: number
+          nullable: true
+        paletteVerdict:
+          $ref: '#/components/schemas/Verdict'
+          nullable: true
+        nearestPaletteColorId:
+          type: string
+          nullable: true
+        nearestPaletteColorName:
+          type: string
+          nullable: true
+        ratingReason:
+          type: string
+          nullable: true
+        autoScore:
+          type: number
+          nullable: true
+        manualScore:
+          type: number
+          nullable: true
+        manualScoreNote:
+          type: string
+          nullable: true
+        wearCount:
+          type: integer
+        lastWornAt:
+          type: string
+          format: date-time
+          nullable: true
+        costPerWear:
+          type: number
+          nullable: true
+        deletedAt:
+          type: string
+          format: date-time
+          nullable: true
+        colours:
+          type: array
+          items:
+            $ref: '#/components/schemas/ItemColour'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    ItemCreate:
+      type: object
+      required: [name, category, season]
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        category:
+          type: string
+          minLength: 1
+          maxLength: 100
+        season:
+          $ref: '#/components/schemas/Season'
+        fitTags:
+          type: array
+          items:
+            type: string
+        status:
+          $ref: '#/components/schemas/ItemStatus'
+        price:
+          type: number
+          nullable: true
+          minimum: 0
+        location:
+          type: string
+          nullable: true
+        photoPath:
+          type: string
+          nullable: true
+        thumbnailPath:
+          type: string
+          nullable: true
+        primaryColorHex:
+          type: string
+          nullable: true
+        paletteScore:
+          type: number
+          nullable: true
+          minimum: 0
+          maximum: 100
+        paletteVerdict:
+          $ref: '#/components/schemas/Verdict'
+          nullable: true
+        nearestPaletteColorId:
+          type: string
+          nullable: true
+        nearestPaletteColorName:
+          type: string
+          nullable: true
+        ratingReason:
+          type: string
+          nullable: true
+        autoScore:
+          type: number
+          nullable: true
+          minimum: 0
+          maximum: 100
+        manualScore:
+          type: number
+          nullable: true
+          minimum: 0
+          maximum: 100
+        manualScoreNote:
+          type: string
+          nullable: true
+        colours:
+          type: array
+          maxItems: 3
+          items:
+            $ref: '#/components/schemas/ItemColourCreate'
+    ItemUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        category:
+          type: string
+          minLength: 1
+          maxLength: 100
+        season:
+          $ref: '#/components/schemas/Season'
+        fitTags:
+          type: array
+          items:
+            type: string
+        status:
+          $ref: '#/components/schemas/ItemStatus'
+        price:
+          type: number
+          nullable: true
+          minimum: 0
+        location:
+          type: string
+          nullable: true
+        photoPath:
+          type: string
+          nullable: true
+        thumbnailPath:
+          type: string
+          nullable: true
+        primaryColorHex:
+          type: string
+          nullable: true
+        paletteScore:
+          type: number
+          nullable: true
+          minimum: 0
+          maximum: 100
+        paletteVerdict:
+          $ref: '#/components/schemas/Verdict'
+          nullable: true
+        nearestPaletteColorId:
+          type: string
+          nullable: true
+        nearestPaletteColorName:
+          type: string
+          nullable: true
+        ratingReason:
+          type: string
+          nullable: true
+        autoScore:
+          type: number
+          nullable: true
+          minimum: 0
+          maximum: 100
+        manualScore:
+          type: number
+          nullable: true
+          minimum: 0
+          maximum: 100
+        manualScoreNote:
+          type: string
+          nullable: true
+    ItemList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Item'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    UploadCreate:
+      type: object
+      required: [contentType, kind, width, height, dataBase64]
+      properties:
+        itemId:
+          type: string
+        path:
+          type: string
+        fileName:
+          type: string
+        contentType:
+          type: string
+          enum: [image/webp]
+        kind:
+          type: string
+          enum: [image, thumbnail]
+        width:
+          type: integer
+          minimum: 1
+        height:
+          type: integer
+          minimum: 1
+        dataBase64:
+          type: string
+    UploadResult:
+      type: object
+      properties:
+        path:
+          type: string
+        kind:
+          type: string
+        contentType:
+          type: string
+        size:
+          type: integer
+        signedUrl:
+          type: string
+        expiresAt:
+          type: string
+          format: date-time
+    SignedUrl:
+      type: object
+      properties:
+        path:
+          type: string
+        signedUrl:
+          type: string
+        expiresAt:
+          type: string
+          format: date-time
+    OutfitItemCreate:
+      type: object
+      required: [itemId, slot]
+      properties:
+        itemId:
+          type: string
+        slot:
+          $ref: '#/components/schemas/OutfitSlot'
+    OutfitItem:
+      type: object
+      properties:
+        outfitId:
+          type: string
+        itemId:
+          type: string
+        slot:
+          $ref: '#/components/schemas/OutfitSlot'
+        itemName:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+    OutfitItemList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/OutfitItem'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    Outfit:
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        occasion:
+          $ref: '#/components/schemas/Occasion'
+        season:
+          $ref: '#/components/schemas/Season'
+        vibe:
+          $ref: '#/components/schemas/Vibe'
+          nullable: true
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OutfitItem'
+        paletteScore:
+          type: number
+          nullable: true
+        fitScore:
+          type: number
+          nullable: true
+        contrastScore:
+          type: number
+          nullable: true
+        rotationScore:
+          type: number
+          nullable: true
+        totalScore:
+          type: number
+          nullable: true
+        explanation:
+          type: array
+          items:
+            type: string
+        saved:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    OutfitCreate:
+      type: object
+      required: [occasion, season]
+      properties:
+        occasion:
+          $ref: '#/components/schemas/Occasion'
+        season:
+          $ref: '#/components/schemas/Season'
+        vibe:
+          $ref: '#/components/schemas/Vibe'
+          nullable: true
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OutfitItemCreate'
+        paletteScore:
+          type: number
+          nullable: true
+          minimum: 0
+          maximum: 100
+        fitScore:
+          type: number
+          nullable: true
+          minimum: 0
+          maximum: 100
+        contrastScore:
+          type: number
+          nullable: true
+          minimum: 0
+          maximum: 100
+        rotationScore:
+          type: number
+          nullable: true
+          minimum: 0
+          maximum: 100
+        totalScore:
+          type: number
+          nullable: true
+          minimum: 0
+          maximum: 100
+        explanation:
+          type: array
+          items:
+            type: string
+        saved:
+          type: boolean
+    OutfitUpdate:
+      type: object
+      properties:
+        occasion:
+          $ref: '#/components/schemas/Occasion'
+        season:
+          $ref: '#/components/schemas/Season'
+        vibe:
+          $ref: '#/components/schemas/Vibe'
+          nullable: true
+        paletteScore:
+          type: number
+          nullable: true
+          minimum: 0
+          maximum: 100
+        fitScore:
+          type: number
+          nullable: true
+          minimum: 0
+          maximum: 100
+        contrastScore:
+          type: number
+          nullable: true
+          minimum: 0
+          maximum: 100
+        rotationScore:
+          type: number
+          nullable: true
+          minimum: 0
+          maximum: 100
+        totalScore:
+          type: number
+          nullable: true
+          minimum: 0
+          maximum: 100
+        explanation:
+          type: array
+          items:
+            type: string
+        saved:
+          type: boolean
+    OutfitList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Outfit'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    WearLogCreate:
+      type: object
+      required: [outfitId, itemIds]
+      properties:
+        outfitId:
+          type: string
+        itemIds:
+          type: array
+          minItems: 1
+          items:
+            type: string
+        wornAt:
+          type: string
+        occasion:
+          $ref: '#/components/schemas/Occasion'
+          nullable: true
+        note:
+          type: string
+          nullable: true
+          maxLength: 500
+    WearLog:
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        outfitId:
+          type: string
+        itemIds:
+          type: array
+          items:
+            type: string
+        itemSnapshots:
+          type: array
+          items:
+            type: object
+            properties:
+              itemId:
+                type: string
+              itemName:
+                type: string
+                nullable: true
+        wornAt:
+          type: string
+          format: date-time
+        occasion:
+          $ref: '#/components/schemas/Occasion'
+          nullable: true
+        note:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    WearLogList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/WearLog'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    AdviceRuleCreate:
+      type: object
+      required: [name, action, reason, source]
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        conditionCategory:
+          type: string
+          nullable: true
+        conditionFitTag:
+          type: string
+          nullable: true
+        conditionColourFamily:
+          $ref: '#/components/schemas/ColourFamily'
+          nullable: true
+        action:
+          $ref: '#/components/schemas/AdviceAction'
+        weight:
+          type: number
+          minimum: 0
+          maximum: 100
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 500
+        source:
+          type: string
+          minLength: 1
+          maxLength: 200
+        sourceText:
+          type: string
+          nullable: true
+        enabled:
+          type: boolean
+    AdviceRuleUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        conditionCategory:
+          type: string
+          nullable: true
+        conditionFitTag:
+          type: string
+          nullable: true
+        conditionColourFamily:
+          $ref: '#/components/schemas/ColourFamily'
+          nullable: true
+        action:
+          $ref: '#/components/schemas/AdviceAction'
+        weight:
+          type: number
+          minimum: 0
+          maximum: 100
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 500
+        source:
+          type: string
+          minLength: 1
+          maxLength: 200
+        sourceText:
+          type: string
+          nullable: true
+        enabled:
+          type: boolean
+    AdviceRule:
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        name:
+          type: string
+        conditionCategory:
+          type: string
+          nullable: true
+        conditionFitTag:
+          type: string
+          nullable: true
+        conditionColourFamily:
+          type: string
+          nullable: true
+        action:
+          $ref: '#/components/schemas/AdviceAction'
+        weight:
+          type: number
+        reason:
+          type: string
+        source:
+          type: string
+        sourceText:
+          type: string
+          nullable: true
+        enabled:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    AdviceRuleList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/AdviceRule'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+    AdviceRuleSeedResult:
+      type: object
+      properties:
+        seeded:
+          type: boolean
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/AdviceRule'
