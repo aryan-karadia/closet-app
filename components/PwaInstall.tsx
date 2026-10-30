@@ -10,7 +10,10 @@ export default function PwaInstall() {
   const [promptEvent, setPromptEvent] = useState<unknown>(null);
   const [installed, setInstalled] = useState(false);
   useEffect(() => {
-    if ('serviceWorker' in navigator) {
+    // Register the service worker only in production. Registering it in
+    // dev cached old /_next/ chunks and old HTML, which then 404d after
+    // a dev server restart or branch switch and left the app on Loading.
+    if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js').catch(() => { /* offline support unavailable */ });
     }
     const handler = (event: Event) => { event.preventDefault(); setPromptEvent(event); };
