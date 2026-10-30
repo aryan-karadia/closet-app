@@ -78,7 +78,7 @@ export const api = {
 
   upload: (body: Record<string, unknown>) => apiFetch<{ path: string; kind: string; contentType: string; size: number; signedUrl: string; expiresAt: string }>('/api/uploads', { method: 'POST', body: JSON.stringify(body) }),
 
-  listOutfits: (params: Record<string, string | boolean | undefined> = {}) => apiFetch<Paginated<Outfit>>('/api/outfits' + qs(params)),
+  listOutfits: (params: Record<string, string | boolean | number | undefined> = {}) => apiFetch<Paginated<Outfit>>('/api/outfits' + qs(params)),
   createOutfit: (body: Record<string, unknown>) => apiFetch<Outfit>('/api/outfits', { method: 'POST', body: JSON.stringify(body) }),
   getOutfit: (id: string) => apiFetch<Outfit>('/api/outfits/' + id),
   patchOutfit: (id: string, body: Record<string, unknown>) => apiFetch<Outfit>('/api/outfits/' + id, { method: 'PATCH', body: JSON.stringify(body) }),
